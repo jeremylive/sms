@@ -15,7 +15,33 @@ export const MenuIzquierda = ({ classes }) => (
     </List>
     <Divider />
     <List>
-      <ListItem component={Link} button to="/inmueble/nuevo">
+
+
+    <ListItem component={Link} button to="/tramite/asignacion/nuevo">
+        <i className="material-icons">add_box</i>
+        <ListItemText
+          classes={{ primary: classes.listItemText }}
+          primary="Nueva Asignacion"
+        />
+      </ListItem>
+
+      <ListItem component={Link} button to="/tramite/translado/nuevo">
+        <i className="material-icons">add_box</i>
+        <ListItemText
+          classes={{ primary: classes.listItemText }}
+          primary="Nuevo translado"
+        />
+      </ListItem>
+
+      <ListItem component={Link} button to="/tramite/translado">
+        <i className="material-icons">business</i>
+        <ListItemText
+          classes={{ primary: classes.listItemText }}
+          primary="Tramite Translado"
+        />
+      </ListItem>
+
+      {/* <ListItem component={Link} button to="/inmueble/nuevo">
         <i className="material-icons">add_box</i>
         <ListItemText
           classes={{ primary: classes.listItemText }}
@@ -35,7 +61,7 @@ export const MenuIzquierda = ({ classes }) => (
           classes={{ primary: classes.listItemText }}
           primary="Mensaje"
         />
-      </ListItem>
+      </ListItem> */}
     </List>
   </div>
 );
