@@ -21,6 +21,7 @@ import EditarInmueble from "./componentes/vistas/EditarInmueble";
 import ListaTranslado from "./componentes/vistas/ListaTranslado";
 import NuevoTranslado from "./componentes/vistas/NuevoTranslado";
 import NuevoAsignacion from "./componentes/vistas/NuevaAsignacion";
+import LoginTelefono from "./componentes/seguridad/LoginTelefono";
 
 function App(props) {
   let firebase = React.useContext(FirebaseContext);
@@ -84,6 +85,7 @@ function App(props) {
               />
               
               <Route path="/auth/login" exact component={Login} />
+              <Route path="/auth/loginTelefono" exact component={LoginTelefono} />
             </Switch>
           </Grid>
         </MuiThemeProvider>

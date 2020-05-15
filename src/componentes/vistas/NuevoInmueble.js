@@ -99,6 +99,7 @@ class NuevoInmueble extends Component {
     this.props.firebase.guardarDocumentos(archivos).then((arregloUrls) => {
       inmueble.fotos = arregloUrls;
       inmueble.keywords = keywords;
+      inmueble.propietario = this.props.firebase.auth.currentUser.uid;
 
       this.props.firebase.db
         .collection("Inmuebles")

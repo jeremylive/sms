@@ -5,6 +5,7 @@ import {
   Typography,
   TextField,
   Button,
+  Grid,
 } from "@material-ui/core";
 import LockOutLineIcon from "@material-ui/icons/LockOutlined";
 import { compose } from "recompose";
@@ -12,6 +13,7 @@ import { consumerFirebase } from "../../server";
 import { iniciarSesion } from "../sesion/actions/sesionAction";
 import { StateContext } from "../sesion/store";
 import { openMensajePantalla } from "../sesion/actions/snackbarAction";
+import { Link } from "react-router-dom";
 
 const style = {
   paper: {
@@ -28,6 +30,10 @@ const style = {
     width: "100%",
     marginTop: 8,
   },
+  submit: {
+    marginTop: 10,
+    marginBottom: 20,
+  }
 };
 
 class Login extends Component {
@@ -76,6 +82,25 @@ class Login extends Component {
     }
   };
 
+  resetearPassword = () => {
+    const {firebase, usuario} = this.state;
+    const [{sesion}, dispatch] = this.context;
+
+    firebase.auth.sendPasswordResetEmail(usuario.email)
+        .then(success=>{
+            openMensajePantalla(dispatch,{
+                open: true,
+                mensaje: "Se ha enviado un correo electronico a tu cuenta"
+            })
+        })
+        .catch(error=>{
+            openMensajePantalla(dispatch, {
+                open : true,
+                mensaje: error.message
+            })
+        })
+}
+
   render() {
     return (
       <Container maxWidth="xs">
@@ -112,10 +137,37 @@ class Login extends Component {
               variant="contained"
               color="primary"
               onClick={this.login}
+              style={style.submit}
             >
               Enviar
             </Button>
+
+            <Grid container >
+            <Grid item xs>
+                <Link href="#" variant="body2" onClick={this.resetearPassword}>
+                  {"Olvido su contraseña?"}
+                </Link>
+              </Grid>
+
+              <Grid item>
+                <Link href="/auth/registrarusuario" variant="body2" >
+                  {"No tienes cuenta? Resgistrate"}
+                </Link>
+              </Grid>
+              
+            </Grid>
           </form>
+
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            style={style.submit}
+            href="/auth/loginTelefono"
+          >
+            Ingrese con su telefono
+          </Button>
+
         </div>
       </Container>
     );

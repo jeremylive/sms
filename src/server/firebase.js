@@ -22,6 +22,7 @@ class Firebase {
     this.db = app.firestore();
     this.auth = app.auth();
     this.storage = app.storage();
+    this.authorization = app.auth;
 
     this.storage.ref().constructor.prototype.guardarDocumentos = function(documentos){
       var ref=this;

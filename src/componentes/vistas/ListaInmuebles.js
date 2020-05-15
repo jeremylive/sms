@@ -223,6 +223,7 @@ class ListaInmuebles extends Component {
   async componentDidMount() {
     let objectQuery = this.props.firebase.db
       .collection("Inmuebles")
+      .where("propietario","==", this.props.firebase.auth.currentUser.uid)
       .orderBy("direccion");
 
     const snapshot = await objectQuery.get();

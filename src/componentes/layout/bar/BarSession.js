@@ -87,7 +87,19 @@ class BarSession extends Component {
     const { classes } = this.props;
     const [{ sesion }, dispatch] = this.context;
     const { usuario } = sesion;
+
+    const { firebase } = this.state;
+
+    if(!usuario){
+      salirSesion(dispatch, firebase).then(success => {
+        this.props.history.push("/auth/login");
+      })
+    }
+    
     let textoUsuario = usuario.nombre + " " + usuario.apellido;
+    if(!usuario.nombre){
+      textoUsuario = usuario.telefono;
+    }
 
     return (
       <div>
