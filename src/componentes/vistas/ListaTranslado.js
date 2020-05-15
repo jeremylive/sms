@@ -57,6 +57,7 @@ class ListaTranslado extends Component {
   };
 
   async componentDidMount() {
+    //Traslados
     let objectQuery = this.props.firebase.db
       .collection("Translados")
       .orderBy("fecha");
@@ -73,6 +74,7 @@ class ListaTranslado extends Component {
       translados: arrayTranslado,
     });
 
+    //Asignaciones
     let objectQuery2 = this.props.firebase.db
       .collection("Asignaciones")
       .orderBy("fecha");
@@ -88,8 +90,26 @@ class ListaTranslado extends Component {
     this.setState({
       asignaciones: arrayAsignacion,
     });
+
+    //Recepciones
+    let objectQuery3 = this.props.firebase.db
+      .collection("Recepciones")
+      .orderBy("fecha");
+
+    const snapshot3 = await objectQuery3.get();
+
+    const arrayRecepcion = snapshot3.docs.map((doc) => {
+      let data = doc.data();
+      let id = doc.id;
+      return { id, ...data };
+    });
+
+    this.setState({
+      recepciones: arrayRecepcion,
+    });
   }
 
+  //Eliminar Traslados
   eliminarTranslado = (id) => {
     this.props.firebase.db
       .collection("Translados")
@@ -109,6 +129,7 @@ class ListaTranslado extends Component {
     });
   };
 
+  //Eliminar Asignaciones
   eliminarAsignacion = (id) => {
     this.props.firebase.db
       .collection("Asignaciones")
@@ -128,6 +149,26 @@ class ListaTranslado extends Component {
     });
   };
 
+  //Eliminar Recepciones
+  eliminarRecepcion = (id) => {
+    this.props.firebase.db
+      .collection("Recepciones")
+      .doc(id)
+      .delete()
+      .then((success) => {
+        this.eliminarRecepcionDeListaEstado(id);
+      });
+  };
+
+  eliminarRecepcionDeListaEstado = (id) => {
+    const recepcionListaNueva = this.state.recepciones.filter(
+      (recepcion) => recepcion.id !== id
+    );
+    this.setState({
+      recepciones: recepcionListaNueva,
+    });
+  };
+
   render() {
     return (
       <Container style={style.cardGrid}>
@@ -136,7 +177,7 @@ class ListaTranslado extends Component {
             <Breadcrumbs aria-label="breadcrumbs">
               <Link color="inherit" style={style.link} href="/">
                 <HomeIcon />
-                Tramites
+                Trámites
               </Link>
               <Typography color="textPrimary">Translado </Typography>
             </Breadcrumbs>
@@ -180,6 +221,7 @@ class ListaTranslado extends Component {
             </Grid>
           </Grid>
 
+
           <Grid item xs={12} sm={12} style={style.gridTextfield}>
             <Grid container spacing={4}>
               {this.state.asignaciones.map((card2) => (
@@ -222,9 +264,46 @@ class ListaTranslado extends Component {
           </Grid>
 
 
+          <Grid item xs={12} sm={12} style={style.gridTextfield}>
+            <Grid container spacing={4}>
+              {this.state.recepciones.map((card3) => (
+                <Grid item key={card3.id} xs={12} sm={6} md={4}>
+                  <Card style={style.card}>
+                    <CardMedia
+                      style={style.cardMedia}
+                      image={
+                        card3.adjuntos
+                          ? card3.adjuntos[0]
+                            ? card3.adjuntos[0]
+                            : logo
+                          : logo
+                      }
+                      title="Recepcion"
+                    />
 
+                    <CardContent style={style.cardContent}>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {"Recepcion: " +
+                          card3.asunto +
+                          ", " +
+                          card3.enviadoPor}
+                      </Typography>
+                    </CardContent>
 
-
+                    <CardActions>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.eliminarRecepcion(card3.id)}
+                      >
+                        Eliminar
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
 
           
         </Paper>

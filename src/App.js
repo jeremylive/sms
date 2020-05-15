@@ -22,6 +22,7 @@ import ListaTranslado from "./componentes/vistas/ListaTranslado";
 import NuevoTranslado from "./componentes/vistas/NuevoTranslado";
 import NuevoAsignacion from "./componentes/vistas/NuevaAsignacion";
 import LoginTelefono from "./componentes/seguridad/LoginTelefono";
+import NuevaRecepcion from "./componentes/vistas/NuevaRecepcion";
 
 function App(props) {
   let firebase = React.useContext(FirebaseContext);
@@ -76,6 +77,7 @@ function App(props) {
               
               <RutaAutenticada exact path="/tramite/translado/nuevo" autenticadoFirebase={firebase.auth.currentUser} component={NuevoTranslado} />
               <RutaAutenticada exact path="/tramite/asignacion/nuevo" autenticadoFirebase={firebase.auth.currentUser} component={NuevoAsignacion} />
+              <RutaAutenticada exact path="/tramite/recepcion/nuevo" autenticadoFirebase={firebase.auth.currentUser} component={NuevaRecepcion} />
                        
 
               <Route

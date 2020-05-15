@@ -14,9 +14,8 @@ export const MenuIzquierda = ({ classes }) => (
       </ListItem>
     </List>
     <Divider />
+    
     <List>
-
-
     <ListItem component={Link} button to="/tramite/asignacion/nuevo">
         <i className="material-icons">add_box</i>
         <ListItemText
@@ -29,15 +28,23 @@ export const MenuIzquierda = ({ classes }) => (
         <i className="material-icons">add_box</i>
         <ListItemText
           classes={{ primary: classes.listItemText }}
-          primary="Nuevo translado"
+          primary="Nuevo Traslado"
         />
       </ListItem>
 
+      <ListItem component={Link} button to="/tramite/recepcion/nuevo">
+        <i className="material-icons">add_box</i>
+        <ListItemText
+          classes={{ primary: classes.listItemText }}
+          primary="Nueva Recepción"
+        />
+      </ListItem>
+      <Divider />
       <ListItem component={Link} button to="/tramite/translado">
         <i className="material-icons">business</i>
         <ListItemText
           classes={{ primary: classes.listItemText }}
-          primary="Tramite Translado"
+          primary="Tramites Translado"
         />
       </ListItem>
 
