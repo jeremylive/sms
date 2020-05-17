@@ -18,11 +18,21 @@ import RutaAutenticada from "./componentes/seguridad/RutaAutenticada";
 import PerfilUsuario from "./componentes/seguridad/PerfilUsuario";
 import NuevoInmueble from "./componentes/vistas/NuevoInmueble";
 import EditarInmueble from "./componentes/vistas/EditarInmueble";
-import ListaTranslado from "./componentes/vistas/ListaTranslado";
+import ListaTramites from "./componentes/vistas/ListaTramites";
 import NuevoTranslado from "./componentes/vistas/NuevoTranslado";
 import NuevoAsignacion from "./componentes/vistas/NuevaAsignacion";
 import LoginTelefono from "./componentes/seguridad/LoginTelefono";
 import NuevaRecepcion from "./componentes/vistas/NuevaRecepcion";
+
+import store from "./redux/store";
+import { Provider } from "react-redux";
+
+import { openMensajePantalla } from "./componentes/sesion/actions/snackbarAction";
+import visualizarRecepcion from "./componentes/vistas/visualizarRecepcion";
+import ListaUsuarios from "./componentes/vistas/ListaUsuarios";
+import visualizarTranslado from "./componentes/vistas/visualizarTranslado";
+import visualizarAsignacion from "./componentes/vistas/visualizarAsignacion";
+
 
 function App(props) {
   let firebase = React.useContext(FirebaseContext);
@@ -34,65 +44,128 @@ function App(props) {
     firebase.estaIniciado().then((val) => {
       setupFirebaseInicial(val);
     });
+
+    if (firebase.messagingValidation.isSupported()) {
+      firebase.messaging.onMessage((payload) => {
+        openMensajePantalla(dispatch, {
+          open: true,
+          mensaje:
+            payload.notification.title + ". " + payload.notification.body,
+        });
+      });
+    }
   });
 
-
   return autenticacionIniciada !== false ? (
-    <React.Fragment>
-      <Snackbar
-        anchorOrigin = {{vertical:"bottom", horizontal:"center"}}
-        open={openSnackbar ? openSnackbar.open : false}
-        autoHideDuration={3000}
-        ContentProps={{
-          "aria-describedby": "message-id"
-        }}
-        message={
-          <span id="message-id">
-            {openSnackbar ? openSnackbar.mensaje : ""}
-          </span>
-        }
-        onClose = {()=>
-          dispatch({
-            type: "OPEN_SNACKBAR",
-            openMensaje: {
-              open: false,
-              mensaje: ""
-            }
-          })
-        }
-      ></Snackbar>
-      <Router>
-        <MuiThemeProvider theme={theme}>
-          <AppNavbar />
+    <Provider store={store}>
+      <React.Fragment>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          open={openSnackbar ? openSnackbar.open : false}
+          autoHideDuration={3000}
+          ContentProps={{
+            "aria-describedby": "message-id",
+          }}
+          message={
+            <span id="message-id">
+              {openSnackbar ? openSnackbar.mensaje : ""}
+            </span>
+          }
+          onClose={() =>
+            dispatch({
+              type: "OPEN_SNACKBAR",
+              openMensaje: {
+                open: false,
+                mensaje: "",
+              },
+            })
+          }
+        ></Snackbar>
+        <Router>
+          <MuiThemeProvider theme={theme}>
+            <AppNavbar />
 
-          <Grid container>
-            <Switch>  
-              {/* <RutaAutenticada exact path="/" autenticadoFirebase={firebase.auth.currentUser} component={ListaInmuebles} />
+            <Grid container>
+              <Switch>
+                {/* <RutaAutenticada exact path="/" autenticadoFirebase={firebase.auth.currentUser} component={ListaInmuebles} />
               <RutaAutenticada exact path="/inmueble/nuevo" autenticadoFirebase={firebase.auth.currentUser} component={NuevoInmueble} />
               <RutaAutenticada exact path="/inmueble/:id" autenticadoFirebase={firebase.auth.currentUser} component={EditarInmueble} />
               */}
 
-              <RutaAutenticada exact path="/auth/perfil" autenticadoFirebase={firebase.auth.currentUser} component={PerfilUsuario} />
-              <RutaAutenticada exact path="/tramite/translado" autenticadoFirebase={firebase.auth.currentUser} component={ListaTranslado} />
-              
-              <RutaAutenticada exact path="/tramite/translado/nuevo" autenticadoFirebase={firebase.auth.currentUser} component={NuevoTranslado} />
-              <RutaAutenticada exact path="/tramite/asignacion/nuevo" autenticadoFirebase={firebase.auth.currentUser} component={NuevoAsignacion} />
-              <RutaAutenticada exact path="/tramite/recepcion/nuevo" autenticadoFirebase={firebase.auth.currentUser} component={NuevaRecepcion} />
-                       
+                <RutaAutenticada
+                  exact
+                  path="/auth/perfil"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={PerfilUsuario}
+                />
+                <RutaAutenticada
+                  exact
+                  path="/tramites"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={ListaTramites}
+                />
 
-              <Route
-                path="/auth/registrarusuario"
-                exact
-                component={RegistrarUsuarios}
-              />
-              
-              <Route path="/auth/login" exact component={Login} />
-              <Route path="/auth/loginTelefono" exact component={LoginTelefono} />
-            </Switch>
-          </Grid>
-        </MuiThemeProvider>
-      </Router>
-    </React.Fragment>
+                <RutaAutenticada
+                  exact
+                  path="/tramite/translado/nuevo"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={NuevoTranslado}
+                />
+                <RutaAutenticada
+                  exact
+                  path="/tramite/asignacion/nuevo"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={NuevoAsignacion}
+                />
+                <RutaAutenticada
+                  exact
+                  path="/tramite/recepcion/nuevo"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={NuevaRecepcion}
+                />
+                <RutaAutenticada
+                  exact
+                  path="/tramite/recepcion/:id"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={visualizarRecepcion}
+                />
+                <RutaAutenticada
+                  exact
+                  path="/tramite/asignacion/:id"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={visualizarAsignacion}
+                />
+                <RutaAutenticada
+                  exact
+                  path="/tramite/translado/:id"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={visualizarTranslado}
+                />
+                <RutaAutenticada
+                  exact
+                  path="/listausuarios"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={ListaUsuarios}
+                />
+
+                <Route
+                  path="/auth/registrarusuario"
+                  exact
+                  component={RegistrarUsuarios}
+                />
+
+                <Route path="/auth/login" exact component={Login} />
+                <Route
+                  path="/auth/loginTelefono"
+                  exact
+                  component={LoginTelefono}
+                />
+              </Switch>
+            </Grid>
+          </MuiThemeProvider>
+        </Router>
+      </React.Fragment>
+    </Provider>
   ) : null;
 }
 

@@ -164,6 +164,7 @@ class EditarInmueble extends Component {
       <Container style={style.container}>
         <Paper style={style.paper}>
           <Grid container spacing={3}>
+            
             <Grid item xs={12} md={8}>
               <Breadcrumbs aria-label="breadcrumb">
                 <Link color="inherit" style={style.link} href="/">
@@ -172,6 +173,7 @@ class EditarInmueble extends Component {
                 <Typography color="textPrimary">Editar Inmueble</Typography>
               </Breadcrumbs>
             </Grid>
+
             <Grid item xs={12} sm={12}>
               <TextField
                 name="direccion"
@@ -181,6 +183,7 @@ class EditarInmueble extends Component {
                 value={this.state.inmueble.direccion}
               />
             </Grid>
+
             <Grid item xs={12} sm={6}>
               <TextField
                 name="ciudad"
@@ -190,6 +193,7 @@ class EditarInmueble extends Component {
                 value={this.state.inmueble.ciudad}
               />
             </Grid>
+            
             <Grid item xs={12} sm={6}>
               <TextField
                 name="pais"

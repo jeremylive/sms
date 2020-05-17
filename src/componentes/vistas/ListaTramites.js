@@ -49,7 +49,7 @@ const style = {
   },
 };
 
-class ListaTranslado extends Component {
+class ListaTramites extends Component {
   state = {
     translados: [],
     asignaciones: [],
@@ -169,17 +169,29 @@ class ListaTranslado extends Component {
     });
   };
 
+  getRecepcion = (id) => {
+    this.props.history.push("/tramite/recepcion/" + id);
+  };
+
+  getAsignacion = (id) => {
+    this.props.history.push("/tramite/asignacion/" + id);
+  };
+
+  getTranslado = (id) => {
+    this.props.history.push("/tramite/translado/" + id);
+  };
+
   render() {
     return (
       <Container style={style.cardGrid}>
         <Paper style={style.paper}>
           <Grid item xs={12} sm={12}>
             <Breadcrumbs aria-label="breadcrumbs">
-              <Link color="inherit" style={style.link} href="/">
+              <Link color="inherit" style={style.link} to="/tramites">
                 <HomeIcon />
                 Trámites
               </Link>
-              <Typography color="textPrimary">Translado </Typography>
+              <Typography color="textPrimary">Transacción, asginació y recepción</Typography>
             </Breadcrumbs>
           </Grid>
 
@@ -207,6 +219,13 @@ class ListaTranslado extends Component {
                     </CardContent>
 
                     <CardActions>
+                    <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.getTranslado(card.id)}
+                      >
+                        Visualizar
+                      </Button>
                       <Button
                         size="small"
                         color="primary"
@@ -249,6 +268,13 @@ class ListaTranslado extends Component {
                     </CardContent>
 
                     <CardActions>
+                    <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.getAsignacion(card2.id)}
+                      >
+                        Visualizar
+                      </Button>
                       <Button
                         size="small"
                         color="primary"
@@ -294,6 +320,13 @@ class ListaTranslado extends Component {
                       <Button
                         size="small"
                         color="primary"
+                        onClick={() => this.getRecepcion(card3.id)}
+                      >
+                        Visualizar
+                      </Button>
+                      <Button
+                        size="small"
+                        color="primary"
                         onClick={() => this.eliminarRecepcion(card3.id)}
                       >
                         Eliminar
@@ -312,4 +345,4 @@ class ListaTranslado extends Component {
   }
 }
 
-export default consumerFirebase(ListaTranslado);
+export default consumerFirebase(ListaTramites);
