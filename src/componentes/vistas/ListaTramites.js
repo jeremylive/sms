@@ -54,6 +54,7 @@ class ListaTramites extends Component {
     translados: [],
     asignaciones: [],
     recepciones: [],
+    textoBusqueda: "",
   };
 
   async componentDidMount() {
@@ -181,6 +182,116 @@ class ListaTramites extends Component {
     this.props.history.push("/tramite/translado/" + id);
   };
 
+  cambiarBusquedaTexto = (e) => {
+    const self = this;
+    self.setState({
+      [e.target.name]: e.target.value,
+    });
+
+    if (self.state.typingTimeout) {
+      clearTimeout(self.state.typingTimeout);
+    }
+
+    self.setState({
+      name: e.target.value,
+      typing: false,
+      typingTimeout: setTimeout((goTime) => {
+
+        let objectQuery = this.props.firebase.db
+          .collection("Translados")
+          .orderBy("fecha")
+          .where(
+            "keywords",
+            "array-contains",
+            self.state.textoBusqueda.toLowerCase()
+          );
+
+        if (self.state.textoBusqueda.trim() === "") {
+          objectQuery = this.props.firebase.db
+            .collection("Translados")
+            .orderBy("fecha");
+        }
+
+        objectQuery.get().then((snapshot) => {
+          const arrayInmueble = snapshot.docs.map((doc) => {
+            let data = doc.data();
+            let id = doc.id;
+            return { id, ...data };
+          });
+
+          this.setState({
+            translados: arrayInmueble,
+          });
+        });
+
+
+
+
+        let objectQuery2 = this.props.firebase.db
+          .collection("Asignaciones")
+          .orderBy("fecha")
+          .where(
+            "keywords",
+            "array-contains",
+            self.state.textoBusqueda.toLowerCase()
+          );
+
+        if (self.state.textoBusqueda.trim() === "") {
+          objectQuery2 = this.props.firebase.db
+            .collection("Asignaciones")
+            .orderBy("fecha");
+        }
+
+        objectQuery2.get().then((snapshot2) => {
+          const arrayInmueble = snapshot2.docs.map((doc) => {
+            let data = doc.data();
+            let id = doc.id;
+            return { id, ...data };
+          });
+
+          this.setState({
+            asignaciones: arrayInmueble,
+          });
+        });
+
+
+
+
+
+        let objectQuery3 = this.props.firebase.db
+          .collection("Recepciones")
+          .orderBy("fecha")
+          .where(
+            "keywords",
+            "array-contains",
+            self.state.textoBusqueda.toLowerCase()
+          );
+
+        if (self.state.textoBusqueda.trim() === "") {
+          objectQuery3 = this.props.firebase.db
+            .collection("Recepciones")
+            .orderBy("fecha");
+        }
+
+        objectQuery3.get().then((snapshot3) => {
+          const arrayInmueble = snapshot3.docs.map((doc) => {
+            let data = doc.data();
+            let id = doc.id;
+            return { id, ...data };
+          });
+
+          this.setState({
+            recepciones: arrayInmueble,
+          });
+        });
+
+
+
+
+      }, 500),
+    });
+  };
+
   render() {
     return (
       <Container style={style.cardGrid}>
@@ -191,9 +302,26 @@ class ListaTramites extends Component {
                 <HomeIcon />
                 Trámites
               </Link>
-              <Typography color="textPrimary">Transacción, asginació y recepción</Typography>
+              <Typography color="textPrimary">Translado, asginació y recepción</Typography>
             </Breadcrumbs>
           </Grid>
+
+
+          <Grid item xs={12} sm={6} style={style.gridTextfield}>
+            <TextField
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              name="textoBusqueda"
+              variant="outlined"
+              label="Ingrese el inmueble a buscar"
+              onChange={this.cambiarBusquedaTexto}
+              value={this.state.textoBusqueda}
+            />
+          </Grid>
+
+
 
           <Grid item xs={12} sm={12} style={style.gridTextfield}>
             <Grid container spacing={4}>
@@ -214,7 +342,7 @@ class ListaTramites extends Component {
 
                     <CardContent style={style.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
-                        {"Transacion: " + card.asunto + ", " + card.transladoA}
+                        {"Translado: " + card.asunto + ", " + card.transladoA}
                       </Typography>
                     </CardContent>
 

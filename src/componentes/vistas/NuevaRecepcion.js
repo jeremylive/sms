@@ -138,8 +138,8 @@ class NuevaRecepcion extends Component {
       <Container style={style.container}>
         <Paper style={style.paper}>
           <Grid item xs={12} md={8}>
-            <Breadcrumbs aria-laberl="breadcrumb">
-              <Link color="inherit" style={style.link} href="/">
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link color="inherit" style={style.link} to="/tramites">
                 <HomeIcon style={style.homeIcon} />
                 Inicio
               </Link>
