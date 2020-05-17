@@ -94,6 +94,10 @@ class BarSession extends Component {
     }
   }
 
+  goInicio = () => {
+    this.props.history.push("/auth/perfil");
+  }
+
   render() {
     const { classes } = this.props;
     const [{ sesion }, dispatch] = this.context;
@@ -153,13 +157,19 @@ class BarSession extends Component {
           <Typography variant="h6">Home</Typography>
           <div className={classes.grow}></div>
           <div className={classes.sectionDesktop}>
-            <IconButton color="inherit" component={Link} to="">
-              <i className="material-icons">mail_outline</i>
+            <IconButton color="inherit" component={Link} to="/auth/registrarusuario">
+              <i className="material-icons">ass_to_queue</i>
+            </IconButton>
+            <IconButton color="inherit" component={Link} to="/tramites">
+              <i className="material-icons">bookmarks</i>
+            </IconButton>
+            <IconButton color="inherit" component={Link} to="/listausuarios">
+              <i className="material-icons">list_alt</i>
             </IconButton>
             <Button color="inherit" onClick={this.salirSesionApp}>
               Salir
             </Button>
-            <Button color="inherit">{textoUsuario}</Button>
+            <Button color="inherit" onClick={this.goInicio}>{textoUsuario}</Button>
             <Avatar src={usuario.foto || fotoUsuairoTemp} />
           </div>
           <div className={classes.sectionMobile}>
