@@ -13,7 +13,6 @@ import {
   TableRow,
   TableCell,
   MenuItem,
-  Select,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Object, Date } from "core-js";
@@ -178,30 +177,28 @@ class NuevaRecepcion extends Component {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            Recibido por 
-            <Select
+            <TextField
+              select
+              label="Recibido por"
+              fullWidth
               name="recibidoPor"
               onChange={this.entradaDatoEnEstado}
-              value={this.state.recepcion.recibidoPor}>
-                <MenuItem value={""}>Seleccione el usuario</MenuItem>
-                {this.state.usuarios.map((usuario) => (
-                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
-                ))}
-              
-            </Select>
+              value={this.state.recepcion.recibidoPor}> 
+                  <MenuItem value={""}>Seleccione el usuario</MenuItem>
+                  {this.state.usuarios.map((usuario) => (
+                    <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                  ))}
+            </TextField>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            Enviado por 
-            <Select
+            <TextField
               name="enviadoPor"
+              label="Enviado por"
+              fullWidth
               onChange={this.entradaDatoEnEstado}
-              value={this.state.recepcion.enviadoPor}>
-                <MenuItem value={""}>Seleccione el usuario</MenuItem>
-                {this.state.usuarios.map((usuario) => (
-                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
-                ))}
-            </Select>
+              value={this.state.recepcion.asunto}
+            />
           </Grid>
 
           <Grid item xs={12} md={6}>
