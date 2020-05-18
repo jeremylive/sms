@@ -49,6 +49,9 @@ const style = {
   foto: {
     height: "100px",
   },
+  comboBox: {
+    width: 185,
+  }
 };
 
 class NuevoAsignacion extends Component {
@@ -181,6 +184,7 @@ class NuevoAsignacion extends Component {
               label="Asignado por"
               fullWidth
               name="asignacionPor"
+              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.asignacionPor}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
@@ -196,6 +200,7 @@ class NuevoAsignacion extends Component {
               label="Asignado a"
               fullWidth
               name="asignacionA"
+              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.asignacionA}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
@@ -211,6 +216,7 @@ class NuevoAsignacion extends Component {
               label="Asunto"
               fullWidth
               multiline
+              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.asunto}
             />

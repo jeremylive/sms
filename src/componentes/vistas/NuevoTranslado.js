@@ -49,6 +49,9 @@ const style = {
   foto: {
     height: "100px",
   },
+  comboBox: {
+    width: 185,
+  }
 };
 
 class NuevoTranslado extends Component {
@@ -181,6 +184,7 @@ class NuevoTranslado extends Component {
               label="Trasladado por"
               fullWidth
               name="transladoPor"
+              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.translado.transladoPor}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
@@ -196,6 +200,7 @@ class NuevoTranslado extends Component {
               label="Trasladado a"
               fullWidth
               name="transladoA"
+              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.translado.transladoA}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
@@ -211,6 +216,7 @@ class NuevoTranslado extends Component {
               label="Asunto"
               fullWidth
               multiline
+              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.translado.asunto}
             />

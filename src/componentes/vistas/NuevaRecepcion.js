@@ -49,6 +49,9 @@ const style = {
   foto: {
     height: "100px",
   },
+  comboBox: {
+    width: 185,
+  }
 };
 
 class NuevaRecepcion extends Component {
@@ -182,6 +185,7 @@ class NuevaRecepcion extends Component {
               label="Recibido por"
               fullWidth
               name="recibidoPor"
+              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.recepcion.recibidoPor}> 
                   <MenuItem value={""}>Seleccione el usuario</MenuItem>
@@ -207,6 +211,7 @@ class NuevaRecepcion extends Component {
               label="Asunto"
               fullWidth
               multiline
+              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.recepcion.asunto}
             />
