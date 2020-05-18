@@ -12,6 +12,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  MenuItem,
+  Select,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Object, Date } from "core-js";
@@ -60,6 +62,23 @@ class NuevoAsignacion extends Component {
       adjuntos: [],
     },
     archivos: [],
+    usuarios: []
+  };
+
+  //Obtiene los usuarios para llenar el comboBox
+  componentDidMount() {
+    const usuariosQuery = this.props.firebase.db.collection("Users").orderBy("apellido");
+    usuariosQuery.get().then((resultados) => {
+      const arrayUsuarios = resultados.docs.map((usuario) => {
+        let data = usuario.data();
+        let id = usuario.id;
+        return { id, ...data };
+      });
+
+      this.setState({
+        usuarios: arrayUsuarios,
+      });
+    });
   };
 
   entradaDatoEnEstado = (e) => {
@@ -143,7 +162,7 @@ class NuevoAsignacion extends Component {
                 <HomeIcon style={style.homeIcon} />
                 Home
               </Link>
-              <Typography color="textPrimary">Nueva transacción</Typography>
+              <Typography color="textPrimary">Nueva asignación</Typography>
             </Breadcrumbs>
           </Grid>
 
@@ -158,23 +177,29 @@ class NuevoAsignacion extends Component {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              name="asignacionPor"
-              label="Transladado por"
-              fullWidth
+            Asignado por 
+            <Select
+              name="asignadoPor"
               onChange={this.entradaDatoEnEstado}
-              value={this.state.asignacion.asignacionPor}
-            />
+              value={this.state.asignacion.asignacionPor}>
+                <MenuItem value={""}>Seleccione el usuario</MenuItem>
+                {this.state.usuarios.map((usuario) => (
+                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                ))}
+            </Select>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              name="asignacionA"
-              label="Transladado a"
-              fullWidth
+            Asignado a 
+            <Select
+              name="asignadoA"
               onChange={this.entradaDatoEnEstado}
-              value={this.state.asignacion.asignacionA}
-            />
+              value={this.state.asignacion.asignacionA}>
+                <MenuItem value={""}>Seleccione el usuario</MenuItem>
+                {this.state.usuarios.map((usuario) => (
+                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                ))}
+            </Select>
           </Grid>
 
           <Grid item xs={12} md={6}>

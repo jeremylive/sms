@@ -12,6 +12,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  MenuItem,
+  Select,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Object, Date } from "core-js";
@@ -60,6 +62,23 @@ class NuevoTranslado extends Component {
       adjuntos: [],
     },
     archivos: [],
+    usuarios: []
+  };
+
+  //Obtiene los usuarios para llenar el comboBox
+  componentDidMount() {
+    const usuariosQuery = this.props.firebase.db.collection("Users").orderBy("apellido");
+    usuariosQuery.get().then((resultados) => {
+      const arrayUsuarios = resultados.docs.map((usuario) => {
+        let data = usuario.data();
+        let id = usuario.id;
+        return { id, ...data };
+      });
+
+      this.setState({
+        usuarios: arrayUsuarios,
+      });
+    });
   };
 
   entradaDatoEnEstado = (e) => {
@@ -158,23 +177,29 @@ class NuevoTranslado extends Component {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              name="transladoPor"
-              label="Transladado por"
-              fullWidth
+            Trasladado por 
+            <Select
+              name="trasladadoPor"
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.transladoPor}
-            />
+              value={this.state.translado.transladoPor}>
+                <MenuItem value={""}>Seleccione el usuario</MenuItem>
+                {this.state.usuarios.map((usuario) => (
+                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                ))}
+            </Select>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              name="transladoA"
-              label="Transladado a"
-              fullWidth
+            Trasladado a 
+            <Select
+              name="trasladadoA"
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.transladoA}
-            />
+              value={this.state.translado.transladoA}>
+                <MenuItem value={""}>Seleccione el usuario</MenuItem>
+                {this.state.usuarios.map((usuario) => (
+                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                ))}
+            </Select>
           </Grid>
 
           <Grid item xs={12} md={6}>
