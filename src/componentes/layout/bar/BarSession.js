@@ -161,10 +161,10 @@ class BarSession extends Component {
               <i className="material-icons">ass_to_queue</i>
             </IconButton>
             <IconButton color="inherit" component={Link} to="/tramites">
-              <i className="material-icons">bookmarks</i>
+              <i className="material-icons">list_alt</i>
             </IconButton>
             <IconButton color="inherit" component={Link} to="/listausuarios">
-              <i className="material-icons">list_alt</i>
+              <i className="material-icons">group</i>
             </IconButton>
             <Button color="inherit" onClick={this.salirSesionApp}>
               Salir

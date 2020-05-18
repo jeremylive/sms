@@ -8,6 +8,7 @@ import {
   Avatar,
   Button,
   Container,
+  MenuItem,
 } from "@material-ui/core";
 import { consumerFirebase } from "../../server";
 import { openMensajePantalla } from "../sesion/actions/snackbarAction";
@@ -33,6 +34,9 @@ const style = {
     margin: 8,
     backgroundColor: "red",
   },
+  comboBox: {
+    width: 435,
+  }
 };
 
 const PerfilUsuario = (props) => {
@@ -46,6 +50,7 @@ const PerfilUsuario = (props) => {
     telefono: "",
     id: "",
     foto: "",
+    role: "",
   });
 
   const cambiarDato = (e) => {
@@ -193,7 +198,21 @@ const PerfilUsuario = (props) => {
                 onChange={cambiarDato}
               />
             </Grid>
-
+            <Grid item xs={12} md={6}>
+                <TextField
+                  select
+                  label="Ingrese su role"
+                  fullWidth
+                  name="role"
+                  style={style.comboBox}
+                  onChange={cambiarDato}
+                  value={estado.role}
+                >
+                  <MenuItem value={"0"}>Seleccione Rol</MenuItem>
+                  <MenuItem value={"ADMINISTRADOR"}>Administrador</MenuItem>
+                  <MenuItem value={"OPERADOR"}>Operador</MenuItem>
+                </TextField>
+              </Grid>
             <Grid item xs={12} md={12} > 
               <ImageUploader
                 withIcon={false}

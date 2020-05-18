@@ -189,7 +189,7 @@ class NuevoTranslado extends Component {
               value={this.state.translado.transladoPor}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
-                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                  <MenuItem value={usuario.nombre + " " + usuario.apellido}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
             </TextField>
           </Grid>
@@ -205,7 +205,7 @@ class NuevoTranslado extends Component {
               value={this.state.translado.transladoA}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
-                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                  <MenuItem value={usuario.nombre + " " + usuario.apellido}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
             </TextField>
           </Grid>
