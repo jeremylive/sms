@@ -139,7 +139,7 @@ class Login extends Component {
               onClick={this.login}
               style={style.submit}
             >
-              Enviar
+              Ingresar
             </Button>
 
             <Grid container >
