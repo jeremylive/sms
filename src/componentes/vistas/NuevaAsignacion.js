@@ -13,6 +13,7 @@ import {
   TableRow,
   TableCell,
   MenuItem,
+  Select,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Object, Date } from "core-js";
@@ -176,33 +177,29 @@ class NuevoAsignacion extends Component {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              select
-              label="Asignado por"
-              fullWidth
-              name="asignacionPor"
+            Asignado por 
+            <Select
+              name="asignadoPor"
               onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.asignacionPor}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
                   <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
-            </TextField>
+            </Select>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              select
-              label="Asignado a"
-              fullWidth
-              name="asignacionA"
+            Asignado a 
+            <Select
+              name="asignadoA"
               onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.asignacionA}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
                   <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
-            </TextField>
+            </Select>
           </Grid>
 
           <Grid item xs={12} md={6}>

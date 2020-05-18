@@ -13,6 +13,7 @@ import {
   TableRow,
   TableCell,
   MenuItem,
+  Select,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Object, Date } from "core-js";
@@ -176,33 +177,29 @@ class NuevoTranslado extends Component {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              select
-              label="Trasladado por"
-              fullWidth
-              name="transladoPor"
+            Trasladado por 
+            <Select
+              name="trasladadoPor"
               onChange={this.entradaDatoEnEstado}
               value={this.state.translado.transladoPor}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
                   <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
-            </TextField>
+            </Select>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              select
-              label="Trasladado a"
-              fullWidth
-              name="transladoA"
+            Trasladado a 
+            <Select
+              name="trasladadoA"
               onChange={this.entradaDatoEnEstado}
               value={this.state.translado.transladoA}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
                   <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
-            </TextField>
+            </Select>
           </Grid>
 
           <Grid item xs={12} md={6}>
