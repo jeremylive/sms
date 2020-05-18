@@ -142,7 +142,7 @@ class LoginTelefono extends Component {
                                         sesion : doc.data(),
                                         autenticado: true
                                     });
-                                    this.props.history.push('/');
+                                    this.props.history.push('/tramites');
                                })
                         })
                 })

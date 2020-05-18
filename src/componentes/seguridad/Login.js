@@ -73,7 +73,7 @@ class Login extends Component {
 
     let callback = await iniciarSesion(dispatch, firebase, email, password);
     if (callback.status) {
-      this.props.history.push("/");
+      this.props.history.push("/tramites");
     } else {
       openMensajePantalla(dispatch, {
         open: true,

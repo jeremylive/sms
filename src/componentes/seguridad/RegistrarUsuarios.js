@@ -80,7 +80,7 @@ class RegistrarUsuarios extends Component {
 
     let callback = await crearUsuario(dispatch, firebase, usuario);
     if (callback.status) {
-      this.props.history.push("/");
+      this.props.history.push("/tramites");
     } else {
       openMensajePantalla(dispatch, {
         open: true,
