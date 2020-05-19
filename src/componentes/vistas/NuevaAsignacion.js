@@ -124,7 +124,7 @@ class NuevoAsignacion extends Component {
         .collection("Asignaciones")
         .add(asignacion)
         .then((success) => {
-          this.props.history.push("/");
+          this.props.history.push("/tramites");
         })
         .catch((error) => {
           openMensajePantalla({

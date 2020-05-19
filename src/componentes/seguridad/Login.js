@@ -150,7 +150,7 @@ class Login extends Component {
               </Grid>
 
               <Grid item>
-                <Link href="/auth/registrarusuario" variant="body2" >
+                <Link to="/auth/registrarusuario" variant="body2">
                   {"No tienes cuenta? Resgistrate"}
                 </Link>
               </Grid>

@@ -124,7 +124,7 @@ class NuevaRecepcion extends Component {
         .collection("Recepciones")
         .add(recepcion)
         .then((success) => {
-          this.props.history.push("/");
+          this.props.history.push("/tramites");
         })
         .catch((error) => {
           openMensajePantalla({
