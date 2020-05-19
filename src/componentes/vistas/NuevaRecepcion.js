@@ -201,7 +201,7 @@ class NuevaRecepcion extends Component {
               label="Enviado por"
               fullWidth
               onChange={this.entradaDatoEnEstado}
-              value={this.state.recepcion.asunto}
+              value={this.state.recepcion.enviadoPor}
             />
           </Grid>
 
