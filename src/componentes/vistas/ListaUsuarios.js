@@ -257,7 +257,7 @@ const ListaUsuarios = (props) => {
           <Grid container justify="center">
             <Grid item xs={6} sm={6}>
               <Select value={selectRole} onChange={eventoEnCombobox}>
-                <MenuItem value={"0"}>Seleccione Rol</MenuItem>
+                <MenuItem value={""}>Seleccione el Rol</MenuItem>
                 <MenuItem value={"ADMIN"}>Administrador</MenuItem>
                 <MenuItem value={"OPERADOR"}>Operador</MenuItem>
               </Select>
