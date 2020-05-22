@@ -103,6 +103,8 @@ class ListaTramites extends Component {
       rutas.push({idTramite: tramite.id, tareas});
     }
     this.setState({rutas: rutas});
+
+    console.log(rutas);
     
     /*
     //Carga las recepciones
@@ -478,18 +480,18 @@ class ListaTramites extends Component {
           </Grid>
 
           {/*Mostrar las rutas*/}
-          <Grid container spacing={10} container style={style.gridTextfield} direction="column" alignitems="stretch">
-            {this.state.rutas.map((ruta) => (
-              <Grid container spacing={2} container direction="row" alignitems="stretch" key={ruta.idTramite}>Documento: {ruta.idTramite}
-                {ruta.tareas.map((tarea) => (
-                  <Grid item key={tarea.id} xs={12} sm={6} md={2}>
-                    {this.renderTarea(tarea) }
-                    
-                  </Grid>
-                ))}
-              </Grid>
-            ))}
-          </Grid>
+          {this.state.rutas.map((ruta) => (
+            <Grid item style={style.gridTextfield}> Documento: {ruta.idTramite}
+                <Grid container spacing={2} container direction="row" alignitems="stretch" key={ruta.idTramite}>
+                  {ruta.tareas.map((tarea) => (
+                    <Grid item key={tarea.id} xs={12} sm={6} md={2}>
+                      {this.renderTarea(tarea) }
+                      
+                    </Grid>
+                  ))}
+                </Grid>
+            </Grid>
+          ))}
         </Paper>
       </Container>
     );
