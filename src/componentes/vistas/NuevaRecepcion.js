@@ -240,7 +240,7 @@ class NuevaRecepcion extends Component {
               fullWidth
               margin="dense"
               onChange={this.entradaDatoEnEstado}
-              value={this.state.recepcion.enviadoPor}
+              value={this.state.recepcion.asunto}
             />
           </Grid>
 
