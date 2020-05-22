@@ -315,11 +315,138 @@ class ListaTramites extends Component {
           });
         });
 
-
-
       }, 500),
     });
   };
+
+  //Retorna las Card según el tipo de la tarea
+  renderTarea(tarea) {
+    switch (tarea.tipoTarea) {
+      case "Asignaciones":
+        return (
+          <Card style={style.card}>
+            <CardMedia
+              style={style.cardMedia}
+              image={
+                tarea.adjuntos
+                  ? tarea.adjuntos[0]
+                    ? tarea.adjuntos[0]
+                    : logo
+                  : logo
+              }
+              title="Asignacion"
+            />
+
+            <CardContent style={style.cardContent}>
+              <Typography gutterBottom variant="body2" component="h2">
+                {"Asignacion: " + tarea.asunto + ", " + tarea.fecha.toDate().toLocaleString(undefined,{ hour12:'true'})}
+              </Typography>
+            </CardContent>
+
+            <CardActions>
+            <Button
+                size="small"
+                color="primary"
+                onClick={() => this.getAsignacion(tarea.id)}
+              >
+                Visualizar
+              </Button>
+              <Button
+                size="small"
+                color="primary"
+                onClick={() => this.eliminarAsignacion(tarea.id)}
+              >
+                Eliminar
+              </Button>
+            </CardActions>
+          </Card>
+        )
+        break;
+      case "Recepciones":
+        return (
+          <Card style={style.card}>
+            <CardMedia
+              style={style.cardMedia}
+              image={
+                tarea.adjuntos
+                  ? tarea.adjuntos[0]
+                    ? tarea.adjuntos[0]
+                    : logo
+                  : logo
+              }
+            />
+                          
+            <CardContent style={style.cardContent}>
+              <Typography gutterBottom variant="body2" component="h2">
+                {"Recepcion: " + tarea.enviadoPor + ", " + tarea.fecha.toDate().toLocaleString(undefined,{ hour12:'true'})}
+              </Typography>
+            </CardContent>
+
+            <CardActions>
+            <Button
+              size="small"
+              color="primary"
+              onClick={() => this.getRecepcion(tarea.id)}
+            >
+              Visualizar
+            </Button>
+            <Button
+              size="small"
+              color="primary"
+              onClick={() => this.eliminarRecepcion(tarea.id)}
+            >
+              Eliminar
+            </Button>
+          </CardActions>
+        </Card>
+        )
+      case "Traslados":
+        return (
+          <Card style={style.card}>
+            <CardMedia
+              style={style.cardMedia}
+              image={
+                tarea.adjuntos
+                  ? tarea.adjuntos[0]
+                    ? tarea.adjuntos[0]
+                    : logo
+                  : logo
+              }
+              title="Traslado"
+            />
+
+            <CardContent style={style.cardContent}>
+              <Typography gutterBottom variant="body2" component="h2">
+                {"Traslado: " + tarea.asunto + ", " + tarea.fecha.toDate().toLocaleString(undefined,{ hour12:'true'})}
+              </Typography>
+            </CardContent>
+
+            <CardActions>
+            <Button
+                size="small"
+                color="primary"
+                onClick={() => this.getTraslado(tarea.id)}
+              >
+                Visualizar
+              </Button>
+              <Button
+                size="small"
+                color="primary"
+                onClick={() => this.eliminarTraslado(tarea.id)}
+              >
+                Eliminar
+              </Button>
+            </CardActions>
+          </Card>
+        )
+        break; 
+      default:
+        return (
+          <Card>Error: Tipo de tarea desconocido</Card>
+        )
+        break;
+    }
+  }
 
   render() {
     return (
@@ -351,208 +478,18 @@ class ListaTramites extends Component {
           </Grid>
 
           {/*Mostrar las rutas*/}
-          <Grid container style={style.gridTextfield} direction="column" alignitems="stretch">
+          <Grid container spacing={10} container style={style.gridTextfield} direction="column" alignitems="stretch">
             {this.state.rutas.map((ruta) => (
-              <Grid container direction="row" alignitems="stretch" key={ruta.idTramite}>Documento: {ruta.idTramite}
+              <Grid container spacing={2} container direction="row" alignitems="stretch" key={ruta.idTramite}>Documento: {ruta.idTramite}
                 {ruta.tareas.map((tarea) => (
                   <Grid item key={tarea.id} xs={12} sm={6} md={2}>
-                    <Card style={style.card}>
-                      <CardMedia
-                        style={style.cardMedia}
-                        image={
-                          tarea.adjuntos
-                            ? tarea.adjuntos[0]
-                              ? tarea.adjuntos[0]
-                              : logo
-                            : logo
-                        }
-                      />
-
-                      <CardContent style={style.cardContent}>
-                        Tarea
-                      </CardContent>
-                    </Card>
+                    {this.renderTarea(tarea) }
+                    
                   </Grid>
                 ))}
               </Grid>
             ))}
           </Grid>
-{/*
-
-                      <CardContent style={style.cardContent}>
-                        <Typography gutterBottom variant="h5" component="h2">
-                          {"Recepcion: " + card.asunto + ", " + card.enviadoPor}
-                        </Typography>
-                      </CardContent>
-
-                      <CardActions>
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.getRecepcion(tarea.id)}
-                        >
-                          Visualizar
-                        </Button>
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.eliminarRecepcion(tarea.id)}
-                        >
-                          Eliminar
-                        </Button>
-                      </CardActions>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            ))}
-          </Grid>
-
-        
-          <Grid item xs={12} sm={12} style={style.gridTextfield}>
-            <Grid container spacing={4}>
-              {this.state.traslados.map((card) => (
-                <Grid item key={card.id} xs={12} sm={6} md={4}>
-                  <Card style={style.card}>
-                    <CardMedia
-                      style={style.cardMedia}
-                      image={
-                        card.adjuntos
-                          ? card.adjuntos[0]
-                            ? card.adjuntos[0]
-                            : logo
-                          : logo
-                      }
-                      title="Traslado"
-                    />
-
-                    <CardContent style={style.cardContent}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {"Traslado: " + card.asunto + ", " + card.trasladoA}
-                      </Typography>
-                    </CardContent>
-
-                    <CardActions>
-                    <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.getTraslado(card.id)}
-                      >
-                        Visualizar
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.eliminarTraslado(card.id)}
-                      >
-                        Eliminar
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-
-
-          <Grid item xs={12} sm={12} style={style.gridTextfield}>
-            <Grid container spacing={4}>
-              {this.state.asignaciones.map((card2) => (
-                <Grid item key={card2.id} xs={12} sm={6} md={4}>
-                  <Card style={style.card}>
-                    <CardMedia
-                      style={style.cardMedia}
-                      image={
-                        card2.adjuntos
-                          ? card2.adjuntos[0]
-                            ? card2.adjuntos[0]
-                            : logo
-                          : logo
-                      }
-                      title="Asignacion"
-                    />
-
-                    <CardContent style={style.cardContent}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {"Asignacion: " +
-                          card2.asunto +
-                          ", " +
-                          card2.asignacionA}
-                      </Typography>
-                    </CardContent>
-
-                    <CardActions>
-                    <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.getAsignacion(card2.id)}
-                      >
-                        Visualizar
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.eliminarAsignacion(card2.id)}
-                      >
-                        Eliminar
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-
-
-          <Grid item xs={12} sm={12} style={style.gridTextfield}>
-            <Grid container spacing={4}>
-              {this.state.recepciones.map((card3) => (
-                <Grid item key={card3.id} xs={12} sm={6} md={4}>
-                  <Card style={style.card}>
-                    <CardMedia
-                      style={style.cardMedia}
-                      image={
-                        card3.adjuntos
-                          ? card3.adjuntos[0]
-                            ? card3.adjuntos[0]
-                            : logo
-                          : logo
-                      }
-                      title="Recepcion"
-                    />
-
-                    <CardContent style={style.cardContent}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {"Recepcion: " +
-                          card3.asunto +
-                          ", " +
-                          card3.enviadoPor}
-                      </Typography>
-                    </CardContent>
-
-                    <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.getRecepcion(card3.id)}
-                      >
-                        Visualizar
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.eliminarRecepcion(card3.id)}
-                      >
-                        Eliminar
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-          */}
-
         </Paper>
       </Container>
     );
