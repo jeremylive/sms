@@ -160,7 +160,7 @@ class NuevoAsignacion extends Component {
         .then((asignacionCreada) => {
           //Crea la tareaXtramite
           this.crearTareaXTramite(asignacionCreada.id);
-          this.props.history.push("/");
+          this.props.history.push("/tramites");
         })
         .catch((error) => {
           openMensajePantalla({
@@ -216,7 +216,7 @@ class NuevoAsignacion extends Component {
               value={this.state.asignacion.idTramite}>
                 <MenuItem value={""}>Seleccione el documento</MenuItem>
                 {this.state.tramites.map((tramite) => (
-                  <MenuItem value={tramite}>{tramite}</MenuItem>
+                  <MenuItem key={tramite} value={tramite}>{tramite}</MenuItem>
                 ))}
             </TextField>
           </Grid>
@@ -233,7 +233,7 @@ class NuevoAsignacion extends Component {
               value={this.state.asignacion.asignacionPor}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
-                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                  <MenuItem key={usuario.id} value={usuario.nombre + " " + usuario.apellido}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
             </TextField>
           </Grid>
@@ -250,7 +250,7 @@ class NuevoAsignacion extends Component {
               value={this.state.asignacion.asignacionA}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
-                  <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                  <MenuItem key={usuario.id} value={usuario.nombre + " " + usuario.apellido}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
             </TextField>
           </Grid>

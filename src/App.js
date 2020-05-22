@@ -32,7 +32,7 @@ import visualizarRecepcion from "./componentes/vistas/visualizarRecepcion";
 import ListaUsuarios from "./componentes/vistas/ListaUsuarios";
 import visualizarTraslado from "./componentes/vistas/visualizarTraslado";
 import visualizarAsignacion from "./componentes/vistas/visualizarAsignacion";
-
+import UsuariosCreados from "./componentes/vistas/UsuariosCreados";
 
 function App(props) {
   let firebase = React.useContext(FirebaseContext);
@@ -147,6 +147,12 @@ function App(props) {
                   autenticadoFirebase={firebase.auth.currentUser}
                   component={ListaUsuarios}
                 />
+
+                {/* <Route
+                  path="/auth/usuariosCreados"
+                  exact
+                  component={UsuariosCreados}
+                /> */}
 
                 <Route
                   path="/auth/registrarusuario"

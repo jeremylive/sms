@@ -169,7 +169,7 @@ class NuevaRecepcion extends Component {
         .then((recepcionCreada) => {
           //Crea la tareaXtramite
           this.crearTareaXTramite(recepcionCreada.id);
-          this.props.history.push("/");
+          this.props.history.push("/tramites");
         })
         .catch((error) => {
           openMensajePantalla({
@@ -227,7 +227,7 @@ class NuevaRecepcion extends Component {
               value={this.state.recepcion.recibidoPor}> 
                   <MenuItem value={""}>Seleccione el usuario</MenuItem>
                   {this.state.usuarios.map((usuario) => (
-                    <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                    <MenuItem key={usuario.id} value={usuario.nombre + " " + usuario.apellido}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                   ))}
             </TextField>
           </Grid>
@@ -243,8 +243,6 @@ class NuevaRecepcion extends Component {
               value={this.state.recepcion.enviadoPor}
             />
           </Grid>
-
-          <div></div>
 
           <Grid item xs={12} md={6}>
             <TextField

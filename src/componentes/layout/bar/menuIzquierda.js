@@ -55,6 +55,14 @@ export const MenuIzquierda = ({ classes, permisoToGetNotification }) => (
           primary="Recibir Notificaciones"
         />
       </ListItem>
+{/* 
+      <ListItem component={Link} button to="/auth/UsuariosCreados">
+        <i className="material-icons">group</i>
+        <ListItemText
+          classes={{ primary: classes.listItemText }}
+          primary="Usuarios creados"
+        />
+      </ListItem> */}
 
 
       <ListItem component={Link} button to="/listausuarios">

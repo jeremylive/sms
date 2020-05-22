@@ -73,7 +73,7 @@ class Login extends Component {
 
     let callback = await iniciarSesion(dispatch, firebase, email, password);
     if (callback.status) {
-      this.props.history.push("/");
+      this.props.history.push("/tramites");
     } else {
       openMensajePantalla(dispatch, {
         open: true,
@@ -139,7 +139,7 @@ class Login extends Component {
               onClick={this.login}
               style={style.submit}
             >
-              Enviar
+              Ingresar
             </Button>
 
             <Grid container >
@@ -150,7 +150,7 @@ class Login extends Component {
               </Grid>
 
               <Grid item>
-                <Link href="/auth/registrarusuario" variant="body2" >
+                <Link to="/auth/registrarusuario" variant="body2">
                   {"No tienes cuenta? Resgistrate"}
                 </Link>
               </Grid>
