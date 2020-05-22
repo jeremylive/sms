@@ -51,82 +51,116 @@ const style = {
 
 class ListaTramites extends Component {
   state = {
-    translados: [],
+    traslados: [],
     asignaciones: [],
     recepciones: [],
+    
+    tramites: [],
+    rutas: [],
+    
     textoBusqueda: "",
   };
 
   async componentDidMount() {
-    //Traslados
+    //Cargar trámites
+    let tramitesQuery = this.props.firebase.db
+      .collection("Tramites")
+      .orderBy("fechaInicio","desc");
+    const snapshot = await tramitesQuery.get();
+    const arrayTramites = snapshot.docs.map((doc) => {
+        let data = doc.data();
+        let id = doc.id;
+        return { id, ...data };
+      });
+
+    this.setState({tramites: arrayTramites});
+
+    //Cargar rutas
+    let rutas = [];
+    for (const tramite of this.state.tramites) {
+      const rutaQuery = this.props.firebase.db
+      .collection("TareasXTramite")
+      .where("idTramite","==",tramite.id)
+      .orderBy("fecha")
+      
+      let snapshotRuta = await rutaQuery.get();
+      let arrayRuta = snapshotRuta.docs.map((tarea) => {
+        let data = tarea.data();
+        return { ...data };
+      });
+
+      let tareas = [];
+      for (const tarea of arrayRuta) {
+        this.props.firebase.db
+        .collection(tarea.tipoTarea)
+        .doc(tarea.idTarea)
+        .get()
+        .then((result) => {
+          let data = result.data();
+          tareas.push({ tipoTarea: tarea.tipoTarea, id: tarea.idTarea, ...data});
+        });
+      }
+      rutas.push({idTramite: tramite.id, tareas});
+    }
+    this.setState({rutas: rutas});
+    
+    /*
+    //Carga las recepciones
     let objectQuery = this.props.firebase.db
-      .collection("Translados")
-      .orderBy("fecha");
-
-    const snapshot = await objectQuery.get();
-
-    const arrayTranslado = snapshot.docs.map((doc) => {
-      let data = doc.data();
-      let id = doc.id;
-      return { id, ...data };
-    });
-
-    this.setState({
-      translados: arrayTranslado,
-    });
-
-    //Asignaciones
-    let objectQuery2 = this.props.firebase.db
-      .collection("Asignaciones")
-      .orderBy("fecha");
-
-    const snapshot2 = await objectQuery2.get();
-
-    const arrayAsignacion = snapshot2.docs.map((doc) => {
-      let data = doc.data();
-      let id = doc.id;
-      return { id, ...data };
-    });
-
-    this.setState({
-      asignaciones: arrayAsignacion,
-    });
-
-    //Recepciones
-    let objectQuery3 = this.props.firebase.db
       .collection("Recepciones")
       .orderBy("fecha");
-
-    const snapshot3 = await objectQuery3.get();
-
-    const arrayRecepcion = snapshot3.docs.map((doc) => {
+    const snapshot = await objectQuery.get();
+    const arrayRecepcion = snapshot.docs.map((doc) => {
       let data = doc.data();
       let id = doc.id;
       return { id, ...data };
     });
+    this.setState({recepciones: arrayRecepcion});
+    console.log(this.state.recepciones);
 
-    this.setState({
-      recepciones: arrayRecepcion,
+    //Carga los traslados
+    let objectQuery = this.props.firebase.db
+    .collection("Traslados")
+    .orderBy("fecha");
+    const snapshot = await objectQuery.get();
+    const arrayTraslado = snapshot.docs.map((doc) => {
+      let data = doc.data();
+      let id = doc.id;
+      return { id, ...data };
     });
+    this.setState({traslados: arrayTraslado});
+
+    //Carga las asignaciones
+    let objectQuery = this.props.firebase.db
+      .collection("Asignaciones")
+      .orderBy("fecha");
+    const snapshot = await objectQuery.get();
+    const arrayAsignacion = snapshot.docs.map((doc) => {
+      let data = doc.data();
+      let id = doc.id;
+      return { id, ...data };
+    });
+    this.setState({asignaciones: arrayAsignacion});
+    */
   }
 
   //Eliminar Traslados
-  eliminarTranslado = (id) => {
+  eliminarTraslado = (id) => {
     this.props.firebase.db
-      .collection("Translados")
+      .collection("Traslados")
       .doc(id)
       .delete()
       .then((success) => {
-        this.eliminarTransladoDeListaEstado(id);
+        this.eliminarTrasladoDeListaEstado(id);
       });
   };
 
-  eliminarTransladoDeListaEstado = (id) => {
-    const transladoListaNueva = this.state.translados.filter(
-      (translado) => translado.id !== id
+  eliminarTrasladoDeListaEstado = (id) => {
+    const trasladoListaNueva = this.state.traslados.filter(
+      (traslado) => traslado.id !== id
     );
     this.setState({
-      translados: transladoListaNueva,
+      traslados: trasladoListaNueva,
     });
   };
 
@@ -178,8 +212,8 @@ class ListaTramites extends Component {
     this.props.history.push("/tramite/asignacion/" + id);
   };
 
-  getTranslado = (id) => {
-    this.props.history.push("/tramite/translado/" + id);
+  getTraslado = (id) => {
+    this.props.history.push("/tramite/traslado/" + id);
   };
 
   cambiarBusquedaTexto = (e) => {
@@ -197,8 +231,9 @@ class ListaTramites extends Component {
       typing: false,
       typingTimeout: setTimeout((goTime) => {
 
+        //Cargar todas los traslados que cumplan la busqueda
         let objectQuery = this.props.firebase.db
-          .collection("Translados")
+          .collection("Traslados")
           .orderBy("fecha")
           .where(
             "keywords",
@@ -208,7 +243,7 @@ class ListaTramites extends Component {
 
         if (self.state.textoBusqueda.trim() === "") {
           objectQuery = this.props.firebase.db
-            .collection("Translados")
+            .collection("Traslados")
             .orderBy("fecha");
         }
 
@@ -220,13 +255,11 @@ class ListaTramites extends Component {
           });
 
           this.setState({
-            translados: arrayInmueble,
+            traslados: arrayInmueble,
           });
         });
 
-
-
-
+        //Cargar todas las asignaciones que cumplan la busqueda
         let objectQuery2 = this.props.firebase.db
           .collection("Asignaciones")
           .orderBy("fecha")
@@ -254,10 +287,7 @@ class ListaTramites extends Component {
           });
         });
 
-
-
-
-
+        //Cargar todas las recepciones que cumplan la busqueda
         let objectQuery3 = this.props.firebase.db
           .collection("Recepciones")
           .orderBy("fecha")
@@ -287,7 +317,6 @@ class ListaTramites extends Component {
 
 
 
-
       }, 500),
     });
   };
@@ -302,7 +331,7 @@ class ListaTramites extends Component {
                 <HomeIcon />
                 Trámites
               </Link>
-              <Typography color="textPrimary">Translado, asginació y recepción</Typography>
+              <Typography color="textPrimary">Traslados, asignaciones y recepciones</Typography>
             </Breadcrumbs>
           </Grid>
 
@@ -321,11 +350,68 @@ class ListaTramites extends Component {
             />
           </Grid>
 
+          {/*Mostrar las rutas*/}
+          <Grid container style={style.gridTextfield} direction="column" alignitems="stretch">
+            {this.state.rutas.map((ruta) => (
+              <Grid container direction="row" alignitems="stretch" key={ruta.idTramite}>Documento: {ruta.idTramite}
+                {ruta.tareas.map((tarea) => (
+                  <Grid item key={tarea.id} xs={12} sm={6} md={2}>
+                    <Card style={style.card}>
+                      <CardMedia
+                        style={style.cardMedia}
+                        image={
+                          tarea.adjuntos
+                            ? tarea.adjuntos[0]
+                              ? tarea.adjuntos[0]
+                              : logo
+                            : logo
+                        }
+                      />
 
+                      <CardContent style={style.cardContent}>
+                        Tarea
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            ))}
+          </Grid>
+{/*
 
+                      <CardContent style={style.cardContent}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {"Recepcion: " + card.asunto + ", " + card.enviadoPor}
+                        </Typography>
+                      </CardContent>
+
+                      <CardActions>
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.getRecepcion(tarea.id)}
+                        >
+                          Visualizar
+                        </Button>
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.eliminarRecepcion(tarea.id)}
+                        >
+                          Eliminar
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            ))}
+          </Grid>
+
+        
           <Grid item xs={12} sm={12} style={style.gridTextfield}>
             <Grid container spacing={4}>
-              {this.state.translados.map((card) => (
+              {this.state.traslados.map((card) => (
                 <Grid item key={card.id} xs={12} sm={6} md={4}>
                   <Card style={style.card}>
                     <CardMedia
@@ -337,12 +423,12 @@ class ListaTramites extends Component {
                             : logo
                           : logo
                       }
-                      title="Translado"
+                      title="Traslado"
                     />
 
                     <CardContent style={style.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
-                        {"Translado: " + card.asunto + ", " + card.transladoA}
+                        {"Traslado: " + card.asunto + ", " + card.trasladoA}
                       </Typography>
                     </CardContent>
 
@@ -350,14 +436,14 @@ class ListaTramites extends Component {
                     <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.getTranslado(card.id)}
+                        onClick={() => this.getTraslado(card.id)}
                       >
                         Visualizar
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.eliminarTranslado(card.id)}
+                        onClick={() => this.eliminarTraslado(card.id)}
                       >
                         Eliminar
                       </Button>
@@ -465,8 +551,8 @@ class ListaTramites extends Component {
               ))}
             </Grid>
           </Grid>
+          */}
 
-          
         </Paper>
       </Container>
     );

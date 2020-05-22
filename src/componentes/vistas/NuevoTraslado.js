@@ -49,50 +49,84 @@ const style = {
   foto: {
     height: "100px",
   },
-  comboBox: {
-    width: 185,
+  campoTexto: {
+    width: 200
   }
 };
 
-class NuevoTranslado extends Component {
+class NuevoTraslado extends Component {
   state = {
-    translado: {
-      fecha: "",
-      transladoPor: "",
-      transladoA: "",
+    traslado: {
+      idTramite: "",
+      fecha: new Date(),
+      trasladoPor: "",
+      trasladoA: "",
       asunto: "",
       adjuntos: [],
     },
     archivos: [],
-    usuarios: []
+    usuarios: [],
+    tramites: []
   };
 
-  //Obtiene los usuarios para llenar el comboBox
   componentDidMount() {
+    //Obtiene los usuarios para llenar el comboBox
     const usuariosQuery = this.props.firebase.db.collection("Users").orderBy("apellido");
     usuariosQuery.get().then((resultados) => {
-      const arrayUsuarios = resultados.docs.map((usuario) => {
-        let data = usuario.data();
+      let arrayUsuarios = resultados.docs.map((usuario) => {
         let id = usuario.id;
+        let data = usuario.data();
         return { id, ...data };
       });
 
-      this.setState({
-        usuarios: arrayUsuarios,
+      this.setState({usuarios: arrayUsuarios});
+    });
+    //Obtiene los tramites, que estén en proceso, para llenar el combobox
+    const tramitesQuery = this.props.firebase.db.collection("Tramites").where("estado","==","En proceso");
+    tramitesQuery.get().then((resultTramite) => {
+      let arrayTramite = resultTramite.docs.map((tramite) => {
+        let id = tramite.id;
+        return id;
       });
+
+      this.setState({tramites: arrayTramite });
     });
   };
 
   entradaDatoEnEstado = (e) => {
-    let translado_ = Object.assign({}, this.state.translado);
-    translado_[e.target.name] = e.target.value;
+    let traslado_ = Object.assign({}, this.state.traslado);
+    traslado_[e.target.name] = e.target.value;
     this.setState({
-      translado: translado_,
+      traslado: traslado_,
     });
   };
 
-  guardarTranslado = () => {
-    const { archivos, translado } = this.state;
+  crearTareaXTramite = (paramIDTarea) => {
+    const tareaXtramite = {
+      fecha: this.state.traslado.fecha,
+      idTarea: paramIDTarea,
+      idTramite: this.state.traslado.idTramite,
+      tipoTarea: "Traslados"
+    }
+    this.props.firebase.db
+      .collection("TareasXTramite")
+      .add(tareaXtramite)
+      .catch((error) => {
+        openMensajePantalla({
+          open: true,
+          mensaje: error,
+        });
+      });
+  }
+
+  guardarTraslado = () => {
+    //Guarda automaticamente la fecha en que se guarda la tarea
+    let traslado_ = Object.assign({}, this.state.traslado);
+    traslado_["fecha"] = new Date();
+    this.setState({
+      traslado: traslado_,
+    });
+    const { archivos, traslado } = this.state;
 
     //Crearle a cada image(archivo) un alias, ese alias es la referencia con la cual posteriormente lo invocaras
     //Ademas ese alias sera almacenado en la base de datos(firestore.firebase)
@@ -113,17 +147,19 @@ class NuevoTranslado extends Component {
     });
 
     const textoBusqueda =
-      translado.fecha + " " + translado.asunto + " " + translado.translafoA;
+      traslado.fecha + " " + traslado.asunto + " " + traslado.translafoA;
     let keywords = createKeyword(textoBusqueda);
 
     this.props.firebase.guardarDocumentos(archivos).then((arregloUrls) => {
-      translado.adjuntos = arregloUrls;
-      translado.keywords = keywords;
+      traslado.adjuntos = arregloUrls;
+      traslado.keywords = keywords;
 
       this.props.firebase.db
-        .collection("Translados")
-        .add(translado)
-        .then((success) => {
+        .collection("Traslados")
+        .add(traslado)
+        .then((trasladoCreado) => {
+          //Crea la tareaXtramite
+          this.crearTareaXTramite(trasladoCreado.id);
           this.props.history.push("/");
         })
         .catch((error) => {
@@ -164,29 +200,37 @@ class NuevoTranslado extends Component {
                 <HomeIcon style={style.homeIcon} />
                 Home
               </Link>
-              <Typography color="textPrimary">Nueva transacción</Typography>
+              <Typography color="textPrimary">Nuevo traslado</Typography>
             </Breadcrumbs>
           </Grid>
 
           <Grid item xs={12} md={6}>
             <TextField
-              name="fecha"
-              label="Fecha"
+              select
+              name="idTramite"
+              label="ID del documento"
               fullWidth
+              margin="dense"
+              style={style.campoTexto}
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.fecha}
-            />
+              value={this.state.traslado.idTramite}>
+                <MenuItem value={""}>Seleccione el documento</MenuItem>
+                {this.state.tramites.map((tramite) => (
+                  <MenuItem value={tramite}>{tramite}</MenuItem>
+                ))}
+            </TextField>
           </Grid>
 
           <Grid item xs={12} md={6}>
             <TextField
               select
               label="Trasladado por"
+              margin="dense"
+              style={style.campoTexto}
               fullWidth
-              name="transladoPor"
-              style={style.comboBox}
+              name="trasladoPor"
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.transladoPor}>
+              value={this.state.traslado.trasladoPor}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
                   <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
@@ -198,11 +242,12 @@ class NuevoTranslado extends Component {
             <TextField
               select
               label="Trasladado a"
+              margin="dense"
+              style={style.campoTexto}
               fullWidth
-              name="transladoA"
-              style={style.comboBox}
+              name="trasladoA"
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.transladoA}>
+              value={this.state.traslado.trasladoA}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
                   <MenuItem value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
@@ -214,11 +259,12 @@ class NuevoTranslado extends Component {
             <TextField
               name="asunto"
               label="Asunto"
+              margin="dense"
+              style={style.campoTexto}
               fullWidth
               multiline
-              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.asunto}
+              value={this.state.traslado.asunto}
             />
           </Grid>
 
@@ -268,7 +314,7 @@ class NuevoTranslado extends Component {
                 size="large"
                 color="primary"
                 style={style.submit}
-                onClick={this.guardarTranslado}
+                onClick={this.guardarTraslado}
               >
                 Guardar
               </Button>
@@ -280,4 +326,4 @@ class NuevoTranslado extends Component {
   }
 }
 
-export default consumerFirebase(NuevoTranslado);
+export default consumerFirebase(NuevoTraslado);

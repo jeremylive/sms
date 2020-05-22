@@ -24,7 +24,7 @@ export const MenuIzquierda = ({ classes, permisoToGetNotification }) => (
         />
       </ListItem>
 
-      <ListItem component={Link} button to="/tramite/translado/nuevo">
+      <ListItem component={Link} button to="/tramite/traslado/nuevo">
         <i className="material-icons">add_box</i>
         <ListItemText
           classes={{ primary: classes.listItemText }}

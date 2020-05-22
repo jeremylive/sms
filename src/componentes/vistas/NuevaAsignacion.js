@@ -49,37 +49,47 @@ const style = {
   foto: {
     height: "100px",
   },
-  comboBox: {
-    width: 185,
+  campoTexto: {
+    width: 200
   }
 };
 
 class NuevoAsignacion extends Component {
   state = {
     asignacion: {
-      fecha: "",
+      idTramite: "",
+      fecha: new Date(),
       asignacionPor: "",
       asignacionA: "",
       asunto: "",
       adjuntos: [],
     },
     archivos: [],
-    usuarios: []
+    usuarios: [],
+    tramites: []
   };
 
-  //Obtiene los usuarios para llenar el comboBox
   componentDidMount() {
+    //Obtiene los usuarios para llenar el comboBox
     const usuariosQuery = this.props.firebase.db.collection("Users").orderBy("apellido");
     usuariosQuery.get().then((resultados) => {
-      const arrayUsuarios = resultados.docs.map((usuario) => {
-        let data = usuario.data();
+      let arrayUsuarios = resultados.docs.map((usuario) => {
         let id = usuario.id;
+        let data = usuario.data();
         return { id, ...data };
       });
 
-      this.setState({
-        usuarios: arrayUsuarios,
+      this.setState({usuarios: arrayUsuarios});
+    });
+    //Obtiene los tramites, que estén en proceso, para llenar el combobox
+    const tramitesQuery = this.props.firebase.db.collection("Tramites").where("estado","==","En proceso");
+    tramitesQuery.get().then((resultTramite) => {
+      let arrayTramite = resultTramite.docs.map((tramite) => {
+        let id = tramite.id;
+        return id;
       });
+
+      this.setState({tramites: arrayTramite });
     });
   };
 
@@ -91,7 +101,31 @@ class NuevoAsignacion extends Component {
     });
   };
 
+  crearTareaXTramite = (paramIDTarea) => {
+    const tareaXtramite = {
+      fecha: this.state.asignacion.fecha,
+      idTarea: paramIDTarea,
+      idTramite: this.state.asignacion.idTramite,
+      tipoTarea: "Asignaciones"
+    }
+    this.props.firebase.db
+      .collection("TareasXTramite")
+      .add(tareaXtramite)
+      .catch((error) => {
+        openMensajePantalla({
+          open: true,
+          mensaje: error,
+        });
+      });
+  }
+
   guardarAsignacion = () => {
+    //Guarda automaticamente la fecha en que se guarda la tarea
+    let asignacion_ = Object.assign({}, this.state.asignacion);
+    asignacion_["fecha"] = new Date();
+    this.setState({
+      asignacion: asignacion_,
+    });
     const { archivos, asignacion } = this.state;
 
     //Crearle a cada image(archivo) un alias, ese alias es la referencia con la cual posteriormente lo invocaras
@@ -123,7 +157,9 @@ class NuevoAsignacion extends Component {
       this.props.firebase.db
         .collection("Asignaciones")
         .add(asignacion)
-        .then((success) => {
+        .then((asignacionCreada) => {
+          //Crea la tareaXtramite
+          this.crearTareaXTramite(asignacionCreada.id);
           this.props.history.push("/");
         })
         .catch((error) => {
@@ -170,21 +206,29 @@ class NuevoAsignacion extends Component {
 
           <Grid item xs={12} md={6}>
             <TextField
-              name="fecha"
-              label="Fecha"
+              select
+              name="idTramite"
+              label="ID del documento"
               fullWidth
+              margin="dense"
+              style={style.campoTexto}
               onChange={this.entradaDatoEnEstado}
-              value={this.state.asignacion.fecha}
-            />
+              value={this.state.asignacion.idTramite}>
+                <MenuItem value={""}>Seleccione el documento</MenuItem>
+                {this.state.tramites.map((tramite) => (
+                  <MenuItem value={tramite}>{tramite}</MenuItem>
+                ))}
+            </TextField>
           </Grid>
 
           <Grid item xs={12} md={6}>
             <TextField
               select
+              name="asignacionPor"
               label="Asignado por"
               fullWidth
-              name="asignacionPor"
-              style={style.comboBox}
+              margin="dense"
+              style={style.campoTexto}
               onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.asignacionPor}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
@@ -199,8 +243,9 @@ class NuevoAsignacion extends Component {
               select
               label="Asignado a"
               fullWidth
+              margin="dense"
+              style={style.campoTexto}
               name="asignacionA"
-              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.asignacionA}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
@@ -215,8 +260,9 @@ class NuevoAsignacion extends Component {
               name="asunto"
               label="Asunto"
               fullWidth
+              margin="dense"
+              style={style.campoTexto}
               multiline
-              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.asunto}
             />

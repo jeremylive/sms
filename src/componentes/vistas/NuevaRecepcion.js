@@ -49,15 +49,16 @@ const style = {
   foto: {
     height: "100px",
   },
-  comboBox: {
-    width: 185,
+  campoTexto: {
+    width: 200
   }
 };
 
 class NuevaRecepcion extends Component {
   state = {
     recepcion: {
-      fecha: "",
+      idTramite: "",
+      fecha: new Date(),
       recibidoPor: "",
       enviadoPor: "",
       asunto: "",
@@ -91,12 +92,54 @@ class NuevaRecepcion extends Component {
     });
   };
 
-  guardarRecepcion = () => {
-    const { archivos, recepcion: recepcion } = this.state;
+  crearTramite = () => {
+    const tramite = {
+      estado: "En proceso",
+      fechaInicio: this.state.recepcion.fecha  }
+    this.props.firebase.db
+      .collection("Tramites")
+      .doc(this.state.recepcion.idTramite)
+      .set(tramite)
+      .catch((error) => {
+        openMensajePantalla({
+          open: true,
+          mensaje: error,
+        });
+      });
+  }
 
+  crearTareaXTramite = (paramIDTarea) => {
+    const tareaXtramite = {
+      fecha: this.state.recepcion.fecha,
+      idTarea: paramIDTarea,
+      idTramite: this.state.recepcion.idTramite,
+      tipoTarea: "Recepciones"
+    }
+    this.props.firebase.db
+      .collection("TareasXTramite")
+      .add(tareaXtramite)
+      .catch((error) => {
+        openMensajePantalla({
+          open: true,
+          mensaje: error,
+        });
+      });
+  }
+
+  guardarRecepcion = () => {
+    //Guarda automaticamente la fecha en que se guarda la tarea
+    let recepcion_ = Object.assign({}, this.state.recepcion);
+    recepcion_["fecha"] = new Date();
+    this.setState({
+      recepcion: recepcion_,
+    });
+    //Crea el trámite
+    this.crearTramite();
+
+    const { archivos, recepcion: recepcion } = this.state;
+    
     //Crearle a cada image(archivo) un alias, ese alias es la referencia con la cual posteriormente lo invocaras
     //Ademas ese alias sera almacenado en la base de datos(firestore.firebase)
-
     Object.keys(archivos).forEach(function (key) {
       let valorDinamico = Math.floor(new Date().getTime() / 1000);
       let nombre = archivos[key].name;
@@ -123,7 +166,9 @@ class NuevaRecepcion extends Component {
       this.props.firebase.db
         .collection("Recepciones")
         .add(recepcion)
-        .then((success) => {
+        .then((recepcionCreada) => {
+          //Crea la tareaXtramite
+          this.crearTareaXTramite(recepcionCreada.id);
           this.props.history.push("/");
         })
         .catch((error) => {
@@ -133,6 +178,8 @@ class NuevaRecepcion extends Component {
           });
         });
     });
+
+    
   };
 
   subirAdjunto = (documentos) => {
@@ -153,7 +200,6 @@ class NuevaRecepcion extends Component {
     });
   };
 
-
   render() {
     let imagenKey = uuid.v4();
     return (
@@ -171,21 +217,12 @@ class NuevaRecepcion extends Component {
 
           <Grid item xs={12} md={6}>
             <TextField
-              name="fecha"
-              label="Fecha"
-              fullWidth
-              onChange={this.entradaDatoEnEstado}
-              value={this.state.recepcion.fecha}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
               select
               label="Recibido por"
               fullWidth
+              margin="dense"
               name="recibidoPor"
-              style={style.comboBox}
+              style={style.campoTexto}
               onChange={this.entradaDatoEnEstado}
               value={this.state.recepcion.recibidoPor}> 
                   <MenuItem value={""}>Seleccione el usuario</MenuItem>
@@ -199,9 +236,26 @@ class NuevaRecepcion extends Component {
             <TextField
               name="enviadoPor"
               label="Enviado por"
+              style={style.campoTexto}
               fullWidth
+              margin="dense"
               onChange={this.entradaDatoEnEstado}
-              value={this.state.recepcion.asunto}
+              value={this.state.recepcion.enviadoPor}
+            />
+          </Grid>
+
+          <div></div>
+
+          <Grid item xs={12} md={6}>
+            <TextField
+              name="idTramite"
+              label="ID del documento"
+              style={style.campoTexto}
+              fullWidth
+              margin="dense"
+              onChange={this.entradaDatoEnEstado}
+              value={this.state.recepcion.idTramite}
+              
             />
           </Grid>
 
@@ -209,9 +263,10 @@ class NuevaRecepcion extends Component {
             <TextField
               name="asunto"
               label="Asunto"
+              style={style.campoTexto}
               fullWidth
+              margin="dense"
               multiline
-              style={style.comboBox}
               onChange={this.entradaDatoEnEstado}
               value={this.state.recepcion.asunto}
             />

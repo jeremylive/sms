@@ -19,7 +19,7 @@ import PerfilUsuario from "./componentes/seguridad/PerfilUsuario";
 import NuevoInmueble from "./componentes/vistas/NuevoInmueble";
 import EditarInmueble from "./componentes/vistas/EditarInmueble";
 import ListaTramites from "./componentes/vistas/ListaTramites";
-import NuevoTranslado from "./componentes/vistas/NuevoTranslado";
+import NuevoTraslado from "./componentes/vistas/NuevoTraslado";
 import NuevoAsignacion from "./componentes/vistas/NuevaAsignacion";
 import LoginTelefono from "./componentes/seguridad/LoginTelefono";
 import NuevaRecepcion from "./componentes/vistas/NuevaRecepcion";
@@ -30,7 +30,7 @@ import { Provider } from "react-redux";
 import { openMensajePantalla } from "./componentes/sesion/actions/snackbarAction";
 import visualizarRecepcion from "./componentes/vistas/visualizarRecepcion";
 import ListaUsuarios from "./componentes/vistas/ListaUsuarios";
-import visualizarTranslado from "./componentes/vistas/visualizarTranslado";
+import visualizarTraslado from "./componentes/vistas/visualizarTraslado";
 import visualizarAsignacion from "./componentes/vistas/visualizarAsignacion";
 
 
@@ -107,9 +107,9 @@ function App(props) {
 
                 <RutaAutenticada
                   exact
-                  path="/tramite/translado/nuevo"
+                  path="/tramite/traslado/nuevo"
                   autenticadoFirebase={firebase.auth.currentUser}
-                  component={NuevoTranslado}
+                  component={NuevoTraslado}
                 />
                 <RutaAutenticada
                   exact
@@ -137,9 +137,9 @@ function App(props) {
                 />
                 <RutaAutenticada
                   exact
-                  path="/tramite/translado/:id"
+                  path="/tramite/traslado/:id"
                   autenticadoFirebase={firebase.auth.currentUser}
-                  component={visualizarTranslado}
+                  component={visualizarTraslado}
                 />
                 <RutaAutenticada
                   exact

@@ -50,33 +50,33 @@ const style = {
 };
 
 
-class visualizarTranslado extends Component {
+class visualizarTraslado extends Component {
   state = {
-    translado: {
+    traslado: {
       fecha: "",
-      transladoPor: "",
-      transladoA: "",
+      trasladoPor: "",
+      trasladoA: "",
       asunto: "",
       adjuntos: [],
     },
   };
 
   entradaDatoEnEstado = (e) => {
-    let translado = Object.assign({}, this.state.translado);
-    translado[e.target.name] = e.target.value;
-    this.setState({ translado });
+    let traslado = Object.assign({}, this.state.traslado);
+    traslado[e.target.name] = e.target.value;
+    this.setState({ traslado });
   };
 
   async componentDidMount() {
     const { id } = this.props.match.params;
 
-    const transladoCollection = this.props.firebase.db.collection(
-      "Translados"
+    const trasladoCollection = this.props.firebase.db.collection(
+      "Traslados"
     );
-    const transladoDB = await transladoCollection.doc(id).get();
+    const trasladoDB = await trasladoCollection.doc(id).get();
 
     this.setState({
-      translado: transladoDB.data(),
+      traslado: trasladoDB.data(),
     });
   }
 
@@ -90,7 +90,7 @@ class visualizarTranslado extends Component {
                 <HomeIcon style={style.homeIcon} />
                 Trámites
               </Link>
-              <Typography color="textPrimary">Translados</Typography>
+              <Typography color="textPrimary">Traslados</Typography>
             </Breadcrumbs>
           </Grid>
 
@@ -100,27 +100,27 @@ class visualizarTranslado extends Component {
               label="Fecha"
               fullWidth
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.fecha}
+              value={this.state.traslado.fecha}
             />
           </Grid>
 
           <Grid item xs={12} md={6}>
             <TextField
-              name="transladoPor"
+              name="trasladoPor"
               label="Recibido por"
               fullWidth
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.transladoPor}
+              value={this.state.traslado.trasladoPor}
             />
           </Grid>
 
           <Grid item xs={12} md={6}>
             <TextField
-              name="transladoA"
+              name="trasladoA"
               label="Enviado por"
               fullWidth
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.transladoA}
+              value={this.state.traslado.trasladoA}
             />
           </Grid>
 
@@ -132,15 +132,15 @@ class visualizarTranslado extends Component {
               rowsMax="4"
               multiline
               onChange={this.entradaDatoEnEstado}
-              value={this.state.translado.asunto}
+              value={this.state.traslado.asunto}
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
             <Table>
               <TableBody>
-                {this.state.translado.adjuntos
-                  ? this.state.translado.adjuntos.map((foto, i) => (
+                {this.state.traslado.adjuntos
+                  ? this.state.traslado.adjuntos.map((foto, i) => (
                       <TableRow key={i}>
                         <TableCell align="left">
                           <img src={foto} style={style.fotoInmueble} />
@@ -158,4 +158,4 @@ class visualizarTranslado extends Component {
   }
 }
 
-export default consumerFirebase(visualizarTranslado);
+export default consumerFirebase(visualizarTraslado);
