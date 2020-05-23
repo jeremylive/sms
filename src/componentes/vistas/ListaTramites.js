@@ -142,64 +142,54 @@ class ListaTramites extends Component {
     */
   }
 
-  //Eliminar Traslados
-  eliminarTraslado = (id) => {
+  //Eliminar un Traslado
+  async eliminarTraslado(pIDTarea,pIDTramite) {
+    //Elimina de la tabla Traslados
     this.props.firebase.db
       .collection("Traslados")
-      .doc(id)
-      .delete()
-      .then((success) => {
-        this.eliminarTrasladoDeListaEstado(id);
-      });
+      .doc(pIDTarea)
+      .delete();
+    this.eliminarAux(pIDTarea,pIDTramite)
   };
 
-  eliminarTrasladoDeListaEstado = (id) => {
-    const trasladoListaNueva = this.state.traslados.filter(
-      (traslado) => traslado.id !== id
-    );
-    this.setState({
-      traslados: trasladoListaNueva,
-    });
-  };
-
-  //Eliminar Asignaciones
-  eliminarAsignacion = (id) => {
+  //Eliminar una Asignacion
+  async eliminarAsignacion(pIDTarea,pIDTramite) {
+    //Elimina de la tabla Asignaciones
     this.props.firebase.db
       .collection("Asignaciones")
-      .doc(id)
-      .delete()
-      .then((success) => {
-        this.eliminarAsignacionDeListaEstado(id);
-      });
-  };
-
-  eliminarAsignacionDeListaEstado = (id) => {
-    const asignacionListaNueva = this.state.asignaciones.filter(
-      (asignacion) => asignacion.id !== id
-    );
-    this.setState({
-      asignaciones: asignacionListaNueva,
-    });
-  };
+      .doc(pIDTarea)
+      .delete();
+    this.eliminarAux(pIDTarea,pIDTramite);
+  }
 
   //Eliminar Recepciones
-  eliminarRecepcion = (id) => {
+  async eliminarRecepcion(pIDTarea,pIDTramite) {
     this.props.firebase.db
       .collection("Recepciones")
-      .doc(id)
-      .delete()
-      .then((success) => {
-        this.eliminarRecepcionDeListaEstado(id);
-      });
+      .doc(pIDTarea)
+      .delete();
+    this.eliminarAux(pIDTarea,pIDTramite);
   };
 
-  eliminarRecepcionDeListaEstado = (id) => {
-    const recepcionListaNueva = this.state.recepciones.filter(
-      (recepcion) => recepcion.id !== id
-    );
-    this.setState({
-      recepciones: recepcionListaNueva,
-    });
+  //Eliminaciones generales para cualquier tarea
+  async eliminarAux(pIDTarea,pIDTramite) {
+    //Elimina de la tabla TareasXTramite
+    const queryTareasTramite = this.props.firebase.db
+      .collection("TareasXTramite")
+      .where("idTarea","==",pIDTarea);
+    const snapshotTarea = await queryTareasTramite.get();
+    let idDocumento = snapshotTarea.docs[0].id;
+    this.props.firebase.db
+      .collection("TareasXTramite")
+      .doc(idDocumento)
+      .delete();
+    //Borra de la lista de rutas
+    let arrayRutasNuevo = this.state.rutas;
+    let arrayTareasNuevo = 
+      this.state.rutas.find((tramite) => tramite.idTramite == pIDTramite)
+      .tareas.filter((tarea) => tarea.id !== pIDTarea);
+    arrayRutasNuevo.find((tramite) => tramite.idTramite == pIDTramite).tareas = arrayTareasNuevo;
+    this.setState({rutas: arrayRutasNuevo});
   };
 
   getRecepcion = (id) => {
@@ -318,7 +308,7 @@ class ListaTramites extends Component {
   };
 
   //Retorna las Card según el tipo de la tarea
-  renderTarea(tarea) {
+  renderTarea(tarea,pIDTramite) {
     switch (tarea.tipoTarea) {
       case "Asignaciones":
         return (
@@ -352,7 +342,7 @@ class ListaTramites extends Component {
               <Button
                 size="small"
                 color="primary"
-                onClick={() => this.eliminarAsignacion(tarea.id)}
+                onClick={() => this.eliminarAsignacion(tarea.id,pIDTramite)}
               >
                 Eliminar
               </Button>
@@ -391,7 +381,7 @@ class ListaTramites extends Component {
             <Button
               size="small"
               color="primary"
-              onClick={() => this.eliminarRecepcion(tarea.id)}
+              onClick={() => this.eliminarRecepcion(tarea.id,pIDTramite)}
             >
               Eliminar
             </Button>
@@ -412,7 +402,6 @@ class ListaTramites extends Component {
               }
               title="Traslado"
             />
-
             <CardContent style={style.cardContent}>
               <Typography gutterBottom variant="body2" component="h2">
                 {"Traslado: " + tarea.asunto + ", " + tarea.fecha.toDate().toLocaleString(undefined,{ hour12:'true'})}
@@ -430,7 +419,7 @@ class ListaTramites extends Component {
               <Button
                 size="small"
                 color="primary"
-                onClick={() => this.eliminarTraslado(tarea.id)}
+                onClick={() => this.eliminarTraslado(tarea.id,pIDTramite)}
               >
                 Eliminar
               </Button>
@@ -480,7 +469,7 @@ class ListaTramites extends Component {
               <Grid container spacing={1} container direction="row" alignitems="stretch">
                 {this.state.rutas[index].tareas.map((tarea) => (
                   <Grid item key={tarea.id} xs={12} sm={6} md={2}>
-                    {this.renderTarea(tarea)}
+                    {this.renderTarea(tarea,ruta.idTramite)}
                   </Grid>
                 ))}
               </Grid>
