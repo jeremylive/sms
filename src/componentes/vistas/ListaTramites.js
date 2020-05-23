@@ -206,19 +206,72 @@ class ListaTramites extends Component {
 
   cambiarBusquedaTexto = (e) => {
     const self = this;
-    self.setState({
-      [e.target.name]: e.target.value,
-    });
+    self.setState({ [e.target.name]: e.target.value, });
 
-    if (self.state.typingTimeout) {
-      clearTimeout(self.state.typingTimeout);
-    }
+    if (self.state.typingTimeout) { clearTimeout(self.state.typingTimeout); }
 
     self.setState({
       name: e.target.value,
       typing: false,
       typingTimeout: setTimeout((goTime) => {
 
+      //Cargar todas los tramites que cumplan la busqueda
+      let objectQuery = this.props.firebase.db
+      .collection("Tramites")
+      .orderBy("fechaInicio","desc")
+      .where(
+        "keywords",
+        "array-contains",
+        self.state.textoBusqueda
+      );
+
+      if (self.state.textoBusqueda.trim() === "") {
+        objectQuery = this.props.firebase.db
+          .collection("Tramites")
+          .orderBy("fechaInicio","desc");
+      }
+
+      objectQuery.get().then((snapshot) => {
+        const arrayTramites = snapshot.docs.map((doc) => {
+          let data = doc.data();
+          let id = doc.id;
+          return { id, ...data };
+        });
+
+        this.setState({ tramites: arrayTramites });
+      });
+      //Cargar nuevas rutas
+      let rutas = [];
+      for (const tramite of this.state.tramites) {
+        const rutaQuery = this.props.firebase.db
+        .collection("TareasXTramite")
+        .where("idTramite","==",tramite.id)
+        .orderBy("fecha")
+        
+        let arrayRuta = [];
+        rutaQuery.get().then((snapshotRuta) => {
+          arrayRuta = snapshotRuta.docs.map((tarea) => {
+            let data = tarea.data();
+            return { ...data };
+          });
+        });
+
+        let tareas = [];
+        for (const tarea of arrayRuta) {
+          const tareaQuery = this.props.firebase.db
+          .collection(tarea.tipoTarea)
+          .doc(tarea.idTarea);
+          tareaQuery.get().then((result) => {
+            let data = result.data();
+            tareas.push({ tipoTarea: tarea.tipoTarea, id: tarea.idTarea, ...data});
+          });
+        }
+        rutas.push({idTramite: tramite.id, tareas});
+      }
+      this.setState({rutas: rutas});
+      console.log(rutas);
+
+      /*
         //Cargar todas los traslados que cumplan la busqueda
         let objectQuery = this.props.firebase.db
           .collection("Traslados")
@@ -297,12 +350,9 @@ class ListaTramites extends Component {
             let id = doc.id;
             return { id, ...data };
           });
-
-          this.setState({
-            recepciones: arrayInmueble,
-          });
+          this.setState({ recepciones: arrayInmueble });
         });
-
+      */
       }, 500),
     });
   };

@@ -93,9 +93,67 @@ class NuevaRecepcion extends Component {
   };
 
   crearTramite = () => {
+    //Palabras de búsqueda
+    let busqueda = [];
+    //  Fecha: día, mes, año, dia de mes y dia de mes de año
+    let _fecha = new Date(this.state.recepcion.fecha);
+    busqueda.push(""+_fecha.getDate() );
+    let numeroMes = _fecha.getMonth();
+    let nombreMes = "";
+    switch (numeroMes) {
+      case 1:
+        nombreMes = "Enero";
+        break;
+      case 2:
+        nombreMes = "Febrero";
+        break;
+      case 3:
+        nombreMes = "Marzo";
+        break;
+      case 4:
+        nombreMes = "Abril";
+        break;
+      case 5:
+        nombreMes = "Mayo";
+        break;
+      case 6:
+        nombreMes = "Junio";
+        break;
+      case 7:
+        nombreMes = "Julio";
+        break;
+      case 8:
+        nombreMes = "Agosto";
+        break;
+      case 9:
+        nombreMes = "Setiembre";
+        break;
+      case 10:
+        nombreMes = "Octubre";
+        break;
+      case 11:
+        nombreMes = "Noviembre";
+        break;
+      case 12:
+        nombreMes = "Diciembre";
+        break;
+      default:
+        break;
+    }
+    busqueda.push(""+_fecha.getFullYear() );
+    busqueda.push(_fecha.getDate() + " de " + nombreMes );
+    busqueda.push(_fecha.getDate() + " de " + nombreMes + " de " + _fecha.getFullYear() );
+    //  Estado
+    busqueda.push("En proceso")
+    //  ID Documento
+    busqueda.push(this.state.recepcion.idTramite)
+    
+    //this.state.recepcion.fecha + " En proceso " + this.state.recepcion.idTramite;
+
     const tramite = {
       estado: "En proceso",
-      fechaInicio: this.state.recepcion.fecha  }
+      fechaInicio: this.state.recepcion.fecha ,
+      keywords: busqueda }
     this.props.firebase.db
       .collection("Tramites")
       .doc(this.state.recepcion.idTramite)
@@ -155,6 +213,7 @@ class NuevaRecepcion extends Component {
         .toLowerCase();
     });
 
+    //Palabras de búsqueda
     const textoBusqueda =
       recepcion.fecha + " " + recepcion.enviadoPor + " " + recepcion.asunto;
     let keywords = createKeyword(textoBusqueda);
