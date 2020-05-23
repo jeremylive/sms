@@ -398,6 +398,7 @@ class ListaTramites extends Component {
           </CardActions>
         </Card>
         )
+        break;
       case "Traslados":
         return (
           <Card style={style.card}>
