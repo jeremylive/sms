@@ -144,7 +144,7 @@ class Login extends Component {
 
             <Grid container >
             <Grid item xs>
-                <Link to="#" variant="body2" onClick={this.resetearPassword}>
+                <Link href="#" variant="body2" onClick={this.resetearPassword}>
                   {"Olvido su contraseña?"}
                 </Link>
               </Grid>
