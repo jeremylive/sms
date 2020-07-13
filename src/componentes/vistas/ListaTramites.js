@@ -546,12 +546,15 @@ class ListaTramites extends Component {
               
               {/* 
               Esta es la llamada de la funcion de afuera, si funciona bien pero nose como pasarle parametros.
-              <SplitButton></SplitButton> */}
+              */}
+              <SplitButton></SplitButton> 
 
               {/* 
               Este es el codigo de la funcion de arriba pero con las constantes creadas dentro de la clase.
               */}
-              <Grid container direction="column" alignItems="center">
+
+
+              {/* <Grid container direction="column" alignItems="center">
                 <Grid item xs={12}>
                   <ButtonGroup
                     variant="contained"
@@ -617,7 +620,7 @@ class ListaTramites extends Component {
                     )}
                   </Popper>
                 </Grid>
-              </Grid>
+              </Grid> */}
 
 
               <p></p>
