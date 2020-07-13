@@ -145,7 +145,7 @@ class NuevoAsignacion extends Component {
         .replace(/\s/g, "_")
         .toLowerCase();
     });
-
+    console.log("esta es la fecha de asignacion" + asignacion.fecha)
     const textoBusqueda =
       asignacion.fecha + " " + asignacion.asunto + " " + asignacion.translafoA;
     let keywords = createKeyword(textoBusqueda);

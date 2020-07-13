@@ -14,6 +14,13 @@ const theme = createMuiTheme({
     secondary: {
       main: "#e53935",
     },
+    warning: {
+      main: "#d50000"
+    },
+    finish: {
+      main: "#03a9f4"
+    }
+    
   },
   spacing: 10,
 });
