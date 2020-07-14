@@ -18,9 +18,16 @@ import {
   MenuList,
   ClickAwayListener,
   ButtonGroup,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Select,
+  DialogActions,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import HomeIcon from "@material-ui/icons/Home";
+import { openMensajePantalla } from "../sesion/actions/snackbarAction";
+
 import logo from "../../logo.svg";
 import FormControl from "@material-ui/core/FormControl";
 import NativeSelect from "@material-ui/core/NativeSelect";
@@ -241,32 +248,26 @@ class ListaTramites extends Component {
 
   //Metodos del Estado
   eventoEnCombobox = (event) => {
-    setState({ selectEstado: event.target.value });
+    this.setState({ selectEstado: event.target.value });
   };
 
   agregarEstado = async () => {
     if (this.state.selectEstado === "0") {
-      openMensajePantalla(dispatch, {
-        open: true,
-        mensaje: "Seleccione un estado valido",
-      });
+      console.log("Seleccione un estado valido");
       return;
     }
+    console.log(this.state.selectEstado);
     //Inserta en tramite el estado
-    for (const tramite of this.state.tramites) {
-      const rutaQuery = this.props.firebase.db
-        .collection("TareasXTramite")
-        .where("idTramite", "==", this.state.idTramiteActual)
-        .orderBy("fecha");
-
-      let snapshotRuta = await rutaQuery.get();
-      let arrayRuta = snapshotRuta.data();
-
-    }
-    // Aqui se deberia de actualizar el tramite con el estado seleccionado
-    // this.setState
-
-    // Luego actualizar la tabla grande
+    this.props.firebase.db
+    .collection("Tramites")
+    .doc(this.state.idTramiteActual)
+    .update("estado", this.state.selectEstado)
+    .catch((error) => {
+      openMensajePantalla({
+        open: true,
+        mensaje: error,
+      });
+    });
 
   };
 
@@ -539,7 +540,7 @@ class ListaTramites extends Component {
         <Dialog
           open={this.state.estadoDialog}
           onClose={() => {
-            setState({ estadoDialog: false });
+            this.setState({ estadoDialog: false });
           }}
         >
           <DialogTitle>Estado del Trámite</DialogTitle>
@@ -568,7 +569,7 @@ class ListaTramites extends Component {
             <Button
               color="primary"
               onClick={() => {
-                abreDialog(false);
+                this.setState({ estadoDialog: false });
               }}
             >
               Cerrar
@@ -621,7 +622,7 @@ class ListaTramites extends Component {
               <p></p>
               <Button
                 variant="contained"
-                onClick={() => abrirDialogConUsuario(ruta.idTramite)}
+                onClick={() => this.abrirDialogConUsuario(ruta.idTramite)}
                 color="primary"
                 size="small"
               >
