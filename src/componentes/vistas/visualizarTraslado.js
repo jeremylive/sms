@@ -70,13 +70,15 @@ class visualizarTraslado extends Component {
   async componentDidMount() {
     const { id } = this.props.match.params;
 
-    const trasladoCollection = this.props.firebase.db.collection(
-      "Traslados"
-    );
+    const trasladoCollection = this.props.firebase.db.collection("Traslados");
     const trasladoDB = await trasladoCollection.doc(id).get();
+    let trasladoData = trasladoDB.data();
+    //Ajusta el formato de la fecha
+    let fechaString = trasladoData.fecha.toDate().toLocaleString(undefined, { hour12: "true" });
+    trasladoData.fecha = fechaString;
 
     this.setState({
-      traslado: trasladoDB.data(),
+      traslado: trasladoData,
     });
   }
 

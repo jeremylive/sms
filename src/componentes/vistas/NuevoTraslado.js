@@ -146,13 +146,8 @@ class NuevoTraslado extends Component {
         .toLowerCase();
     });
 
-    const textoBusqueda =
-      traslado.fecha + " " + traslado.asunto + " " + traslado.translafoA;
-    let keywords = createKeyword(textoBusqueda);
-
     this.props.firebase.guardarDocumentos(archivos).then((arregloUrls) => {
       traslado.adjuntos = arregloUrls;
-      traslado.keywords = keywords;
 
       this.props.firebase.db
         .collection("Traslados")

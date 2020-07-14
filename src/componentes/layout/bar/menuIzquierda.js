@@ -16,22 +16,6 @@ export const MenuIzquierda = ({ classes, permisoToGetNotification }) => (
     <Divider />
     
     <List>
-    <ListItem component={Link} button to="/tramite/asignacion/nuevo">
-        <i className="material-icons">add_box</i>
-        <ListItemText
-          classes={{ primary: classes.listItemText }}
-          primary="Nueva Asignacion"
-        />
-      </ListItem>
-
-      <ListItem component={Link} button to="/tramite/traslado/nuevo">
-        <i className="material-icons">add_box</i>
-        <ListItemText
-          classes={{ primary: classes.listItemText }}
-          primary="Nuevo Traslado"
-        />
-      </ListItem>
-
       <ListItem component={Link} button to="/tramite/recepcion/nuevo">
         <i className="material-icons">add_box</i>
         <ListItemText
@@ -39,12 +23,27 @@ export const MenuIzquierda = ({ classes, permisoToGetNotification }) => (
           primary="Nueva Recepción"
         />
       </ListItem>
-      <Divider />
+      <ListItem component={Link} button to="/tramite/asignacion/nuevo">
+        <i className="material-icons">add_box</i>
+        <ListItemText
+          classes={{ primary: classes.listItemText }}
+          primary="Nueva Asignacion"
+        />
+      </ListItem>
+      <ListItem component={Link} button to="/tramite/traslado/nuevo">
+        <i className="material-icons">add_box</i>
+        <ListItemText
+          classes={{ primary: classes.listItemText }}
+          primary="Nuevo Traslado"
+        />
+      </ListItem>
+      <Divider/>
+
       <ListItem component={Link} button to="/tramites">
         <i className="material-icons">business</i>
         <ListItemText
           classes={{ primary: classes.listItemText }}
-          primary="Tramites"
+          primary="Trámites activos"
         />
       </ListItem>
 

@@ -95,65 +95,73 @@ class NuevaRecepcion extends Component {
   crearTramite = () => {
     //Palabras de búsqueda
     let busqueda = [];
-    //  Fecha: día, mes, año, dia de mes y dia de mes de año
-    let _fecha = new Date(this.state.recepcion.fecha);
+    let _fecha = this.state.recepcion.fecha;
+    //  Día
     busqueda.push(""+_fecha.getDate() );
+    //  Nombre del mes
     let numeroMes = _fecha.getMonth();
     let nombreMes = "";
     switch (numeroMes) {
-      case 1:
+      case 0:
         nombreMes = "Enero";
         break;
-      case 2:
+      case 1:
         nombreMes = "Febrero";
         break;
-      case 3:
+      case 2:
         nombreMes = "Marzo";
         break;
-      case 4:
+      case 3:
         nombreMes = "Abril";
         break;
-      case 5:
+      case 4:
         nombreMes = "Mayo";
         break;
-      case 6:
+      case 5:
         nombreMes = "Junio";
         break;
-      case 7:
+      case 6:
         nombreMes = "Julio";
         break;
-      case 8:
+      case 7:
         nombreMes = "Agosto";
         break;
-      case 9:
+      case 8:
         nombreMes = "Setiembre";
         break;
-      case 10:
+      case 9:
         nombreMes = "Octubre";
         break;
-      case 11:
+      case 10:
         nombreMes = "Noviembre";
         break;
-      case 12:
+      case 11:
         nombreMes = "Diciembre";
         break;
       default:
         break;
     }
+    busqueda.push(nombreMes);
+    busqueda.push(nombreMes.toLowerCase() );
+    //  Año
     busqueda.push(""+_fecha.getFullYear() );
+    //  Día de Mes
     busqueda.push(_fecha.getDate() + " de " + nombreMes );
+    busqueda.push(_fecha.getDate() + " de " + nombreMes.toLowerCase() );
+    //  Día de Mes de Año
     busqueda.push(_fecha.getDate() + " de " + nombreMes + " de " + _fecha.getFullYear() );
+    busqueda.push(_fecha.getDate() + " de " + nombreMes.toLowerCase() + " de " + _fecha.getFullYear() );
     //  Estado
-    busqueda.push("En proceso")
+    busqueda.push("En proceso");
     //  ID Documento
-    busqueda.push(this.state.recepcion.idTramite)
-    
-    //this.state.recepcion.fecha + " En proceso " + this.state.recepcion.idTramite;
+    busqueda.push(this.state.recepcion.idTramite);
 
+    //Crea el tramite en la BD
     const tramite = {
       estado: "En proceso",
-      fechaInicio: this.state.recepcion.fecha ,
-      keywords: busqueda }
+      fechaInicio: this.state.recepcion.fecha,
+      keywords: busqueda
+    }
     this.props.firebase.db
       .collection("Tramites")
       .doc(this.state.recepcion.idTramite)
@@ -166,6 +174,7 @@ class NuevaRecepcion extends Component {
       });
   }
 
+  //Crea la asociación entre Tarea y Tramite en la BD
   crearTareaXTramite = (paramIDTarea) => {
     const tareaXtramite = {
       fecha: this.state.recepcion.fecha,
@@ -213,14 +222,8 @@ class NuevaRecepcion extends Component {
         .toLowerCase();
     });
 
-    //Palabras de búsqueda
-    const textoBusqueda =
-      recepcion.fecha + " " + recepcion.enviadoPor + " " + recepcion.asunto;
-    let keywords = createKeyword(textoBusqueda);
-
     this.props.firebase.guardarDocumentos(archivos).then((arregloUrls) => {
       recepcion.adjuntos = arregloUrls;
-      recepcion.keywords = keywords;
 
       this.props.firebase.db
         .collection("Recepciones")
@@ -237,8 +240,6 @@ class NuevaRecepcion extends Component {
           });
         });
     });
-
-    
   };
 
   subirAdjunto = (documentos) => {

@@ -69,13 +69,15 @@ class visualizarAsignacion extends Component {
   async componentDidMount() {
     const { id } = this.props.match.params;
 
-    const asignacionCollection = this.props.firebase.db.collection(
-      "Asignaciones"
-    );
+    const asignacionCollection = this.props.firebase.db.collection("Asignaciones");
     const asignacionDB = await asignacionCollection.doc(id).get();
+    let asignacionData = asignacionDB.data();
+    //Ajusta el formato de la fecha
+    let fechaString = asignacionData.fecha.toDate().toLocaleString(undefined, { hour12: "true" });
+    asignacionData.fecha = fechaString;
 
     this.setState({
-      asignacion: asignacionDB.data(),
+      asignacion: asignacionData,
     });
   }
 

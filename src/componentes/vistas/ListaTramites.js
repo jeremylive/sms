@@ -35,12 +35,13 @@ const style = {
   paper: {
     backgroundColor: "#f5f5f5",
     padding: "20px",
-    minheight: 650,
+    minHeight: 650,
   },
   link: {
     display: "flex",
   },
   gridTextfield: {
+    minWidth: "75%",
     marginTop: "20px",
   },
   card: {
@@ -57,6 +58,11 @@ const style = {
   barraBoton: {
     marginTop: "20px",
   },
+  botonBuscar: {
+    marginTop: "20px",
+    marginLeft: "10px",
+    height: 56
+  }
 };
 
 const options = ["Aprobado", "Rechazado", "Prevención"];
@@ -169,6 +175,7 @@ class ListaTramites extends Component {
     anchorRef: null,
     selectedIndex: 1,
   };
+
   async componentDidMount() {
     //Cargar trámites
     let tramitesQuery = this.props.firebase.db
@@ -266,75 +273,65 @@ class ListaTramites extends Component {
     this.props.history.push("/tramite/traslado/" + id);
   };
 
-  cambiarBusquedaTexto = (e) => {
-    const self = this;
-    self.setState({ [e.target.name]: e.target.value });
+  //Buscar tramites
+  cambiarTextoBusqueda(e) {
+    let newState = {};
+    newState[e.target.name] = e.target.value;
+    this.setState(newState);
+  }
 
-    if (self.state.typingTimeout) {
-      clearTimeout(self.state.typingTimeout);
+  async buscarTramites() {
+    //Vacía la lista de tramites
+    this.setState({tramites: []});
+    this.setState({rutas: []});
+
+    console.log(this.state.textoBusqueda);
+    //Cargar todas los tramites que cumplan la busqueda
+    let tramitesQuery = this.props.firebase.db
+      .collection("Tramites")
+      .where("keywords", "array-contains", this.state.textoBusqueda);
+    
+    //Si la búsqueda esta vacía busca todos los trámites
+    if (this.state.textoBusqueda.trim() === "") {
+      tramitesQuery = this.props.firebase.db
+        .collection("Tramites")
+        .orderBy("fechaInicio", "desc");
     }
 
-    self.setState({
-      name: e.target.value,
-      typing: false,
-      typingTimeout: setTimeout((goTime) => {
-        //Cargar todas los tramites que cumplan la busqueda
-        let objectQuery = this.props.firebase.db
-          .collection("Tramites")
-          .orderBy("fechaInicio", "desc")
-          .where("keywords", "array-contains", self.state.textoBusqueda);
-
-        if (self.state.textoBusqueda.trim() === "") {
-          objectQuery = this.props.firebase.db
-            .collection("Tramites")
-            .orderBy("fechaInicio", "desc");
-        }
-
-        objectQuery.get().then((snapshot) => {
-          const arrayTramites = snapshot.docs.map((doc) => {
-            let data = doc.data();
-            let id = doc.id;
-            return { id, ...data };
-          });
-
-          this.setState({ tramites: arrayTramites });
-        });
-        //Cargar nuevas rutas
-        let rutas = [];
-        for (const tramite of this.state.tramites) {
-          const rutaQuery = this.props.firebase.db
-            .collection("TareasXTramite")
-            .where("idTramite", "==", tramite.id)
-            .orderBy("fecha");
-
-          let arrayRuta = [];
-          rutaQuery.get().then((snapshotRuta) => {
-            arrayRuta = snapshotRuta.docs.map((tarea) => {
-              let data = tarea.data();
-              return { ...data };
-            });
-          });
-
-          let tareas = [];
-          for (const tarea of arrayRuta) {
-            const tareaQuery = this.props.firebase.db
-              .collection(tarea.tipoTarea)
-              .doc(tarea.idTarea);
-            tareaQuery.get().then((result) => {
-              let data = result.data();
-              tareas.push({
-                tipoTarea: tarea.tipoTarea,
-                id: tarea.idTarea,
-                ...data,
-              });
-            });
-          }
-          rutas.push({ idTramite: tramite.id, tareas });
-        }
-        this.setState({ rutas: rutas });
-        console.log(rutas);
-      }, 500),
+    const snapshot = await tramitesQuery.get();
+    const arrayTramites = snapshot.docs.map((doc) => {
+      let data = doc.data();
+      let id = doc.id;
+      return { id, ...data };
     });
+    this.setState({ tramites: arrayTramites });
+
+    //Cargar nuevas rutas
+    let rutas = [];
+    for (const tramite of this.state.tramites) {
+      const rutaQuery = this.props.firebase.db
+        .collection("TareasXTramite")
+        .where("idTramite", "==", tramite.id)
+        .orderBy("fecha");
+
+      let snapshotRuta = await rutaQuery.get();
+      let arrayRuta = snapshotRuta.docs.map((tarea) => {
+        let data = tarea.data();
+        return { ...data };
+      });
+
+      let tareas = [];
+      for (const tarea of arrayRuta) {
+        let tareaQuery = this.props.firebase.db
+          .collection(tarea.tipoTarea)
+          .doc(tarea.idTarea);
+        let result = await tareaQuery.get();
+        let data = result.data();
+        tareas.push({ tipoTarea: tarea.tipoTarea, id: tarea.idTarea, ...data });
+      }
+      rutas.push({ idTramite: tramite.id, tareas });
+    }
+    this.setState({ rutas: rutas });
   };
 
 
@@ -370,140 +367,245 @@ class ListaTramites extends Component {
   renderTarea(tarea, pIDTramite) {
     switch (tarea.tipoTarea) {
       case "Asignaciones":
-        return (
-          <Card style={style.card}>
-            <CardMedia
-              style={style.cardMedia}
-              image={
-                tarea.adjuntos
-                  ? tarea.adjuntos[0]
-                    ? tarea.adjuntos[0]
-                    : logo
-                  : logo
-              }
-              title="Asignacion"
-            />
+        //Si tiene imagen retorna una tarjeta con imagen
+        if (tarea.adjuntos.length != 0) {
+          return (
+            <Card style={style.card}>
+              <CardMedia
+                style={style.cardMedia}
+                image={tarea.adjuntos[0]}
+                title="Asignacion"
+              />
 
-            <CardContent style={style.cardContent}>
-              <Typography gutterBottom variant="body2" component="h2">
-                {"Asignacion: " +
-                  tarea.asunto +
-                  ", " +
-                  tarea.fecha
-                    .toDate()
-                    .toLocaleString(undefined, { hour12: "true" })}
-              </Typography>
-            </CardContent>
+              <CardContent style={style.cardContent}>
+                <Typography gutterBottom variant="body2" component="h2">
+                  {"Asignacion: " +
+                    tarea.asunto +
+                    ", " +
+                    tarea.fecha
+                      .toDate()
+                      .toLocaleString(undefined, { hour12: "true" })}
+                </Typography>
+              </CardContent>
 
-            <CardActions>
-              <Button
-                size="small"
-                color="primary"
-                onClick={() => this.getAsignacion(tarea.id)}
-              >
-                Visualizar
-              </Button>
-              <Button
-                size="small"
-                color="primary"
-                onClick={() => this.eliminarAsignacion(tarea.id, pIDTramite)}
-              >
-                Eliminar
-              </Button>
-            </CardActions>
-          </Card>
-        );
-        break;
+              <CardActions>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.getAsignacion(tarea.id)}
+                >
+                  Visualizar
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.eliminarAsignacion(tarea.id, pIDTramite)}
+                >
+                  Eliminar
+                </Button>
+              </CardActions>
+            </Card>
+          );
+        }
+        //Si no tiene imagen retorna una tarjeta sin imagen
+        else {
+          return (
+            <Card style={style.card}>
+              <CardContent style={style.cardContent}>
+              <Grid container alignContent="center" style={{height:"100%"}}>
+                  <Grid item>
+                    <Typography gutterBottom variant="body2" component="h2">
+                      {"Asignacion: " +
+                        tarea.asunto +
+                        ", " +
+                        tarea.fecha
+                          .toDate()
+                          .toLocaleString(undefined, { hour12: "true" })}
+                    </Typography>
+                  </Grid>         
+                </Grid>
+              </CardContent>
+
+              <CardActions>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.getAsignacion(tarea.id)}
+                >
+                  Visualizar
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.eliminarAsignacion(tarea.id, pIDTramite)}
+                >
+                  Eliminar
+                </Button>
+              </CardActions>
+            </Card>
+          );
+        }
       case "Recepciones":
-        return (
-          <Card style={style.card}>
-            <CardMedia
-              style={style.cardMedia}
-              image={
-                tarea.adjuntos
-                  ? tarea.adjuntos[0]
-                    ? tarea.adjuntos[0]
-                    : logo
-                  : logo
-              }
-            />
+        //Si tiene imagen retorna una tarjeta con imagen
+        if (tarea.adjuntos.length != 0) {
+          return (
+            <Card style={style.card}>
+              <CardMedia
+                style={style.cardMedia}
+                image={tarea.adjuntos[0]}
+                title="Recepcion"
+              />
 
-            <CardContent style={style.cardContent}>
-              <Typography gutterBottom variant="body2" component="h2">
-                {"Recepcion: " +
-                  tarea.enviadoPor +
-                  ", " +
-                  tarea.fecha
-                    .toDate()
-                    .toLocaleString(undefined, { hour12: "true" })}
-              </Typography>
-            </CardContent>
+              <CardContent style={style.cardContent}>
+                <Typography gutterBottom variant="body2" component="h2">
+                  {"Recepcion: " +
+                    tarea.enviadoPor +
+                    ", " +
+                    tarea.fecha
+                      .toDate()
+                      .toLocaleString(undefined, { hour12: "true" })}
+                </Typography>
+              </CardContent>
 
-            <CardActions>
-              <Button
-                size="small"
-                color="primary"
-                onClick={() => this.getRecepcion(tarea.id)}
-              >
-                Visualizar
-              </Button>
-              <Button
-                size="small"
-                color="primary"
-                onClick={() => this.eliminarRecepcion(tarea.id, pIDTramite)}
-              >
-                Eliminar
-              </Button>
-            </CardActions>
-          </Card>
-        );
+              <CardActions>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.getRecepcion(tarea.id)}
+                >
+                  Visualizar
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.eliminarRecepcion(tarea.id, pIDTramite)}
+                >
+                  Eliminar
+                </Button>
+              </CardActions>
+            </Card>
+          );
+        }
+        //Si no tiene imagen retorna una tarjeta sin imagen
+        else {
+          return (
+            <Card style={style.card}>
+              <CardContent style={style.cardContent}>
+                <Grid container alignContent="center" style={{height:"100%"}}>
+                  <Grid item>
+                    <Typography gutterBottom variant="body2" component="h2">
+                    {"Recepcion: " +
+                      tarea.enviadoPor +
+                      ", " +
+                      tarea.fecha
+                        .toDate()
+                        .toLocaleString(undefined, { hour12: "true" })}
+                    </Typography>
+                  </Grid>         
+                </Grid>
+              </CardContent>
+              
+              <CardActions>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.getRecepcion(tarea.id)}
+                >
+                  Visualizar
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.eliminarRecepcion(tarea.id, pIDTramite)}
+                >
+                  Eliminar
+                </Button>
+              </CardActions>
+            </Card>
+          );
+        }
+        
       case "Traslados":
-        return (
-          <Card style={style.card}>
-            <CardMedia
-              style={style.cardMedia}
-              image={
-                tarea.adjuntos
-                  ? tarea.adjuntos[0]
-                    ? tarea.adjuntos[0]
-                    : logo
-                  : logo
-              }
-              title="Traslado"
-            />
-            <CardContent style={style.cardContent}>
-              <Typography gutterBottom variant="body2" component="h2">
-                {"Traslado: " +
-                  tarea.asunto +
-                  ", " +
-                  tarea.fecha
-                    .toDate()
-                    .toLocaleString(undefined, { hour12: "true" })}
-              </Typography>
-            </CardContent>
+        //Si tiene imagen retorna una tarjeta con imagen
+        if (tarea.adjuntos.length != 0) {
+          return (
+            <Card style={style.card}>
+              <CardMedia
+                style={style.cardMedia}
+                image={tarea.adjuntos[0]}
+                title="Traslado"
+              />
 
-            <CardActions>
-              <Button
-                size="small"
-                color="primary"
-                onClick={() => this.getTraslado(tarea.id)}
-              >
-                Visualizar
-              </Button>
-              <Button
-                size="small"
-                color="primary"
-                onClick={() => this.eliminarTraslado(tarea.id, pIDTramite)}
-              >
-                Eliminar
-              </Button>
-            </CardActions>
-          </Card>
-        );
-        break;
+              <CardContent style={style.cardContent}>
+                <Typography gutterBottom variant="body2" component="h2">
+                  {"Traslado: " +
+                    tarea.asunto +
+                    ", " +
+                    tarea.fecha
+                      .toDate()
+                      .toLocaleString(undefined, { hour12: "true" })}
+                </Typography>
+              </CardContent>
+
+              <CardActions>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.getTraslado(tarea.id)}
+                >
+                  Visualizar
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.eliminarTraslado(tarea.id, pIDTramite)}
+                >
+                  Eliminar
+                </Button>
+              </CardActions>
+            </Card>
+          );
+        }
+        //Si no tiene imagen retorna una tarjeta sin imagen
+        else {
+          return (
+            <Card style={style.card}>
+              <CardContent style={style.cardContent}>
+                <Grid container alignContent="center" style={{height:"100%"}}>
+                  <Grid item>
+                    <Typography gutterBottom variant="body2" component="h2">
+                      {"Traslado: " +
+                        tarea.asunto +
+                        ", " +
+                        tarea.fecha
+                          .toDate()
+                          .toLocaleString(undefined, { hour12: "true" })}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </CardContent>
+
+              <CardActions>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.getTraslado(tarea.id)}
+                >
+                  Visualizar
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => this.eliminarTraslado(tarea.id, pIDTramite)}
+                >
+                  Eliminar
+                </Button>
+              </CardActions>
+            </Card>
+          );
+        }
       default:
         return <Card>Error: Tipo de tarea desconocido</Card>;
-        break;
     }
   }
 
@@ -515,27 +617,40 @@ class ListaTramites extends Component {
             <Breadcrumbs aria-label="breadcrumbs">
               <Link color="inherit" style={style.link} to="/tramites">
                 <HomeIcon />
-                Trámites
+                Inicio
               </Link>
               <Typography color="textPrimary">
-                Traslados, asignaciones y recepciones
+                Trámites activos
               </Typography>
             </Breadcrumbs>
           </Grid>
 
-          <Grid item xs={12} sm={6} style={style.gridTextfield}>
-            <TextField
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              name="textoBusqueda"
-              variant="outlined"
-              label="Ingrese el inmueble a buscar"
-              onChange={this.cambiarBusquedaTexto}
-              value={this.state.textoBusqueda}
-            />
+          <Grid container>
+            <Grid item style={style.gridTextfield}>
+              <TextField
+                fullWidth
+                InputLabelProps={{shrink:true}}
+                name="textoBusqueda"
+                variant="outlined"
+                label="Ingrese los parámetros de búsqueda"
+                onChange={this.cambiarTextoBusqueda.bind(this)}
+                value={this.state.textoBusqueda}
+              />
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                style={style.botonBuscar}
+                size="small"
+                disableElevation
+                onClick={this.buscarTramites.bind(this)}
+              >Buscar
+              </Button>
+            </Grid>
           </Grid>
+          
+          
 
           {/*Mostrar las rutas*/}
           {this.state.rutas.map((ruta, index) => (

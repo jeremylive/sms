@@ -146,13 +146,9 @@ class NuevoAsignacion extends Component {
         .toLowerCase();
     });
     console.log("esta es la fecha de asignacion" + asignacion.fecha)
-    const textoBusqueda =
-      asignacion.fecha + " " + asignacion.asunto + " " + asignacion.translafoA;
-    let keywords = createKeyword(textoBusqueda);
 
     this.props.firebase.guardarDocumentos(archivos).then((arregloUrls) => {
         asignacion.adjuntos = arregloUrls;
-        asignacion.keywords = keywords;
 
       this.props.firebase.db
         .collection("Asignaciones")

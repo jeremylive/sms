@@ -69,18 +69,19 @@ class visualizarRecepcion extends Component {
   async componentDidMount() {
     const { id } = this.props.match.params;
 
-    const recepcionCollection = this.props.firebase.db.collection(
-      "Recepciones"
-    );
+    const recepcionCollection = this.props.firebase.db.collection("Recepciones" );
     const recepcionDB = await recepcionCollection.doc(id).get();
-
+    let recepcionData = recepcionDB.data();
+    //Ajusta el formato de la fecha
+    let fechaString = recepcionData.fecha.toDate().toLocaleString(undefined, { hour12: "true" });
+    recepcionData.fecha = fechaString;
+    
     this.setState({
-      recepcion: recepcionDB.data(),
+      recepcion: recepcionData,
     });
   }
 
-
-
+  
   render() {
     return (
       <Container style={style.container}>
@@ -88,7 +89,7 @@ class visualizarRecepcion extends Component {
           <Grid item xs={12} md={8}>
             <Breadcrumbs aria-label="breadcrumb">
               <Link color="inherit" style={style.link} href="/tramites">
-                <HomeIcon style={style.homeIcon} />
+                <HomeIcon style={style.homeIcon}/>
                 Trámites
               </Link>
               <Typography color="textPrimary">Recepcion</Typography>
