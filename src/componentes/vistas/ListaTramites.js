@@ -61,103 +61,9 @@ const style = {
   botonBuscar: {
     marginTop: "20px",
     marginLeft: "10px",
-    height: 56
-  }
+    height: 56,
+  },
 };
-
-const options = ["Aprobado", "Rechazado", "Prevención"];
-const estado = "";
-const id_tramite = 0;
-
-function SplitButton() {
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
-
-  const handleClick = () => {
-    console.info(`You clicked ${options[selectedIndex]}`);
-    const estado = options[selectedIndex];
-    console.info("este es el estado " + estado);
-    console.info(id_tramite);
-  };
-
-  const handleMenuItemClick = (event, index) => {
-    setSelectedIndex(index);
-    setOpen(false);
-  };
-
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
-  };
-
-  const handleClose = (event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  return (
-    <Grid container direction="column" alignItems="center">
-      <Grid item xs={12}>
-        <ButtonGroup
-          variant="contained"
-          color="primary"
-          ref={anchorRef}
-          aria-label="split button"
-        >
-          <Button onClick={handleClick}>{options[selectedIndex]}</Button>
-          <Button
-            color="primary"
-            size="small"
-            aria-controls={open ? "split-button-menu" : undefined}
-            aria-expanded={open ? "true" : undefined}
-            aria-label="select merge strategy"
-            aria-haspopup="menu"
-            onClick={handleToggle}
-          >
-            <ArrowDropDownIcon />
-          </Button>
-        </ButtonGroup>
-        <Popper
-          open={open}
-          anchorEl={anchorRef.current}
-          role={undefined}
-          transition
-          disablePortal
-        >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin:
-                  placement === "bottom" ? "center top" : "center bottom",
-              }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={handleClose}>
-                  <MenuList id="split-button-menu">
-                    {options.map((option, index) => (
-                      <MenuItem
-                        key={option}
-                        disabled={index === 2}
-                        selected={index === selectedIndex}
-                        onClick={(event) => handleMenuItemClick(event, index)}
-                      >
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </Grid>
-    </Grid>
-  );
-}
 
 class ListaTramites extends Component {
   state = {
@@ -170,10 +76,9 @@ class ListaTramites extends Component {
 
     textoBusqueda: "",
 
-    options: ["Aprobado", "Rechazado", "Prevención"],
-    open: false,
-    anchorRef: null,
-    selectedIndex: 1,
+    selectEstado: "0",
+    estadoDialog: false,
+    idTramiteActual: 0
   };
 
   async componentDidMount() {
@@ -282,15 +187,15 @@ class ListaTramites extends Component {
 
   async buscarTramites() {
     //Vacía la lista de tramites
-    this.setState({tramites: []});
-    this.setState({rutas: []});
+    this.setState({ tramites: [] });
+    this.setState({ rutas: [] });
 
     console.log(this.state.textoBusqueda);
     //Cargar todas los tramites que cumplan la busqueda
     let tramitesQuery = this.props.firebase.db
       .collection("Tramites")
       .where("keywords", "array-contains", this.state.textoBusqueda);
-    
+
     //Si la búsqueda esta vacía busca todos los trámites
     if (this.state.textoBusqueda.trim() === "") {
       tramitesQuery = this.props.firebase.db
@@ -332,36 +237,43 @@ class ListaTramites extends Component {
       rutas.push({ idTramite: tramite.id, tareas });
     }
     this.setState({ rutas: rutas });
+  }
+
+  //Metodos del Estado
+  eventoEnCombobox = (event) => {
+    setState({ selectEstado: event.target.value });
   };
 
-
-  
-  handleClick = () => {
-    console.info(`You clicked ${options[this.state.selectedIndex]}`);
-  };
-
-  handleMenuItemClick = (event, index) => {
-    this.setState({ selectedIndex: index });
-    this.setState({ open: false });
-  };
-
-  handleClose = (event) => {
-    if (
-      this.state.anchorRef.current &&
-      this.state.anchorRef.current.contains(event.target)
-    ) {
+  agregarEstado = async () => {
+    if (this.state.selectEstado === "0") {
+      openMensajePantalla(dispatch, {
+        open: true,
+        mensaje: "Seleccione un estado valido",
+      });
       return;
     }
-    this.setState({ open: false });
+    //Inserta en tramite el estado
+    for (const tramite of this.state.tramites) {
+      const rutaQuery = this.props.firebase.db
+        .collection("TareasXTramite")
+        .where("idTramite", "==", this.state.idTramiteActual)
+        .orderBy("fecha");
+
+      let snapshotRuta = await rutaQuery.get();
+      let arrayRuta = snapshotRuta.data();
+
+    }
+    // Aqui se deberia de actualizar el tramite con el estado seleccionado
+    // this.setState
+
+    // Luego actualizar la tabla grande
+
   };
 
-  // ////////////////////////// Aqui no se como hacerle para que se implemente esta asignacion dentro de la clase
-  // handleToggle = () => {
-  //   setOpen((prevOpen) => !prevOpen);
-  // };
-
-
-
+  abrirDialogConUsuario = (idTramite) => {
+      this.setState({ idTramiteActual: idTramite });
+      this.setState({ estadoDialog: true});
+  };
 
   //Retorna las Card según el tipo de la tarea
   renderTarea(tarea, pIDTramite) {
@@ -412,7 +324,11 @@ class ListaTramites extends Component {
           return (
             <Card style={style.card}>
               <CardContent style={style.cardContent}>
-              <Grid container alignContent="center" style={{height:"100%"}}>
+                <Grid
+                  container
+                  alignContent="center"
+                  style={{ height: "100%" }}
+                >
                   <Grid item>
                     <Typography gutterBottom variant="body2" component="h2">
                       {"Asignacion: " +
@@ -422,7 +338,7 @@ class ListaTramites extends Component {
                           .toDate()
                           .toLocaleString(undefined, { hour12: "true" })}
                     </Typography>
-                  </Grid>         
+                  </Grid>
                 </Grid>
               </CardContent>
 
@@ -491,20 +407,24 @@ class ListaTramites extends Component {
           return (
             <Card style={style.card}>
               <CardContent style={style.cardContent}>
-                <Grid container alignContent="center" style={{height:"100%"}}>
+                <Grid
+                  container
+                  alignContent="center"
+                  style={{ height: "100%" }}
+                >
                   <Grid item>
                     <Typography gutterBottom variant="body2" component="h2">
-                    {"Recepcion: " +
-                      tarea.enviadoPor +
-                      ", " +
-                      tarea.fecha
-                        .toDate()
-                        .toLocaleString(undefined, { hour12: "true" })}
+                      {"Recepcion: " +
+                        tarea.enviadoPor +
+                        ", " +
+                        tarea.fecha
+                          .toDate()
+                          .toLocaleString(undefined, { hour12: "true" })}
                     </Typography>
-                  </Grid>         
+                  </Grid>
                 </Grid>
               </CardContent>
-              
+
               <CardActions>
                 <Button
                   size="small"
@@ -524,7 +444,7 @@ class ListaTramites extends Component {
             </Card>
           );
         }
-        
+
       case "Traslados":
         //Si tiene imagen retorna una tarjeta con imagen
         if (tarea.adjuntos.length != 0) {
@@ -571,7 +491,11 @@ class ListaTramites extends Component {
           return (
             <Card style={style.card}>
               <CardContent style={style.cardContent}>
-                <Grid container alignContent="center" style={{height:"100%"}}>
+                <Grid
+                  container
+                  alignContent="center"
+                  style={{ height: "100%" }}
+                >
                   <Grid item>
                     <Typography gutterBottom variant="body2" component="h2">
                       {"Traslado: " +
@@ -612,6 +536,46 @@ class ListaTramites extends Component {
   render() {
     return (
       <Container style={style.cardGrid}>
+        <Dialog
+          open={this.state.estadoDialog}
+          onClose={() => {
+            setState({ estadoDialog: false });
+          }}
+        >
+          <DialogTitle>Estado del Trámite</DialogTitle>
+          <DialogContent>
+            <Grid container justify="center">
+              <Grid item xs={6} sm={6}>
+                <Select value={this.state.selectEstado} onChange={this.eventoEnCombobox}>
+                  <MenuItem value={""}>Seleccione el Estado</MenuItem>
+                  <MenuItem value={"Aprobado"}>Aprobado</MenuItem>
+                  <MenuItem value={"Rechazado"}>Rechazado</MenuItem>
+                  <MenuItem value={"Prevencion"}>Prevención</MenuItem>
+                </Select>
+              </Grid>
+              <Grid item xs={6} sm={6}>
+                <Button
+                  color="secondary"
+                  onClick={() => this.agregarEstado()}
+                  variant="contained"
+                >
+                  Actualizar Estado
+                </Button>
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              color="primary"
+              onClick={() => {
+                abreDialog(false);
+              }}
+            >
+              Cerrar
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Paper style={style.paper}>
           <Grid item xs={12} sm={12}>
             <Breadcrumbs aria-label="breadcrumbs">
@@ -619,9 +583,7 @@ class ListaTramites extends Component {
                 <HomeIcon />
                 Inicio
               </Link>
-              <Typography color="textPrimary">
-                Trámites activos
-              </Typography>
+              <Typography color="textPrimary">Trámites activos</Typography>
             </Breadcrumbs>
           </Grid>
 
@@ -629,7 +591,7 @@ class ListaTramites extends Component {
             <Grid item style={style.gridTextfield}>
               <TextField
                 fullWidth
-                InputLabelProps={{shrink:true}}
+                InputLabelProps={{ shrink: true }}
                 name="textoBusqueda"
                 variant="outlined"
                 label="Ingrese los parámetros de búsqueda"
@@ -645,99 +607,26 @@ class ListaTramites extends Component {
                 size="small"
                 disableElevation
                 onClick={this.buscarTramites.bind(this)}
-              >Buscar
+              >
+                Buscar
               </Button>
             </Grid>
           </Grid>
-          
-          
 
           {/*Mostrar las rutas*/}
           {this.state.rutas.map((ruta, index) => (
             <Grid item style={style.gridTextfield} key={ruta.idTramite}>
               {" "}
               Documento: {ruta.idTramite}
-              
-              
-              {/* 
-              Esta es la llamada de la funcion de afuera, si funciona bien pero nose como pasarle parametros.
-              */}
-              <SplitButton></SplitButton> 
-
-              {/* 
-              Este es el codigo de la funcion de arriba pero con las constantes creadas dentro de la clase.
-              */}
-
-
-              {/* <Grid container direction="column" alignItems="center">
-                <Grid item xs={12}>
-                  <ButtonGroup
-                    variant="contained"
-                    color="primary"
-                    ref={this.state.anchorRef}
-                    aria-label="split button"
-                  >
-                    <Button onClick={this.handleClick}>
-                      {options[this.state.selectedIndex]}
-                    </Button>
-                    <Button
-                      color="primary"
-                      size="small"
-                      aria-controls={this.state.open ? "split-button-menu" : undefined}
-                      aria-expanded={this.state.open ? "true" : undefined}
-                      aria-label="select merge strategy"
-                      aria-haspopup="menu"
-                       
-                      // Esta linea se necesita para que muestre las opciones del combo Box
-                      // onClick={handleToggle} 
-                    >
-                     
-                      <ArrowDropDownIcon />
-                    </Button>
-                  </ButtonGroup>
-                  <Popper
-                    open={this.state.open}
-                    // Aqui no se esta accediendo al tipo de dato cons que necesita para llamar al current.
-                    anchorEl={this.state.anchorRef.current}
-                    role={undefined}
-                    transition
-                    disablePortal
-                  >
-                    {({ TransitionProps, placement }) => (
-                      <Grow
-                        {...TransitionProps}
-                        style={{
-                          transformOrigin:
-                            placement === "bottom"
-                              ? "center top"
-                              : "center bottom",
-                        }}
-                      >
-                        <Paper>
-                          <ClickAwayListener onClickAway={this.handleClose}>
-                            <MenuList id="split-button-menu">
-                              {options.map((option, index) => (
-                                <MenuItem
-                                  key={option}
-                                  disabled={index === 2}
-                                  selected={index === this.state.selectedIndex}
-                                  onClick={(event) =>
-                                    this.handleMenuItemClick(event, index)
-                                  }
-                                >
-                                  {option}
-                                </MenuItem>
-                              ))}
-                            </MenuList>
-                          </ClickAwayListener>
-                        </Paper>
-                      </Grow>
-                    )}
-                  </Popper>
-                </Grid>
-              </Grid> */}
-
-
+              <p></p>
+              <Button
+                variant="contained"
+                onClick={() => abrirDialogConUsuario(ruta.idTramite)}
+                color="primary"
+                size="small"
+              >
+                Estado
+              </Button>
               <p></p>
               <Grid
                 container
