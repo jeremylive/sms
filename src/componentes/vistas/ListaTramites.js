@@ -85,7 +85,7 @@ class ListaTramites extends Component {
 
     selectEstado: "0",
     estadoDialog: false,
-    idTramiteActual: 0
+    idTramiteActual: 0,
   };
 
   async componentDidMount() {
@@ -253,27 +253,36 @@ class ListaTramites extends Component {
 
   agregarEstado = async () => {
     if (this.state.selectEstado === "0") {
-      console.log("Seleccione un estado valido");
+      console.log("No seleccionó ningún estado");
       return;
     }
     console.log(this.state.selectEstado);
     //Inserta en tramite el estado
     this.props.firebase.db
-    .collection("Tramites")
-    .doc(this.state.idTramiteActual)
-    .update("estado", this.state.selectEstado)
-    .catch((error) => {
-      openMensajePantalla({
-        open: true,
-        mensaje: error,
+      .collection("Tramites")
+      .doc(this.state.idTramiteActual)
+      .update("estado", this.state.selectEstado)
+      .catch((error) => {
+        openMensajePantalla({
+          open: true,
+          mensaje: error,
+        });
       });
-    });
-
   };
 
   abrirDialogConUsuario = (idTramite) => {
-      this.setState({ idTramiteActual: idTramite });
-      this.setState({ estadoDialog: true});
+    this.setState({ idTramiteActual: idTramite });
+    this.setState({ estadoDialog: true });
+  };
+
+  imprimirEstado = () => {
+    this.props.firebase.db
+      .collection("Tramites")
+      .doc(this.state.idTramiteActual)
+      .get()
+      .then((doc) => {
+        console.log("El estado es:", doc.data().estado);
+      });
   };
 
   //Retorna las Card según el tipo de la tarea
@@ -547,12 +556,17 @@ class ListaTramites extends Component {
           <DialogContent>
             <Grid container justify="center">
               <Grid item xs={6} sm={6}>
-                <Select value={this.state.selectEstado} onChange={this.eventoEnCombobox}>
+                <Select
+                  value={this.state.selectEstado}
+                  onChange={this.eventoEnCombobox}
+                >
                   <MenuItem value={""}>Seleccione el Estado</MenuItem>
                   <MenuItem value={"Aprobado"}>Aprobado</MenuItem>
                   <MenuItem value={"Rechazado"}>Rechazado</MenuItem>
                   <MenuItem value={"Prevencion"}>Prevención</MenuItem>
+                  <MenuItem value={"En_proceso"}>En proceso</MenuItem>
                 </Select>
+                <this.imprimirEstado></this.imprimirEstado>
               </Grid>
               <Grid item xs={6} sm={6}>
                 <Button
