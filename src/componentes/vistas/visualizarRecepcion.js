@@ -32,8 +32,7 @@ const style = {
     backgroundColor: "#f5f5f5",
   },
   link: {
-    padding: "20px",
-    backgroundColor: "#f5f5f5",
+    display: "flex",
   },
   homeIcon: {
     width: 20,

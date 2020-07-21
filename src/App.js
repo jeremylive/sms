@@ -34,6 +34,9 @@ import visualizarTraslado from "./componentes/vistas/visualizarTraslado";
 import visualizarAsignacion from "./componentes/vistas/visualizarAsignacion";
 import UsuariosCreados from "./componentes/vistas/UsuariosCreados";
 
+import verNotas from "./componentes/vistas/verNotas";
+import NuevaNota from "./componentes/vistas/NuevaNota";
+
 function App(props) {
   let firebase = React.useContext(FirebaseContext);
   const [autenticacionIniciada, setupFirebaseInicial] = React.useState(false);
@@ -125,6 +128,12 @@ function App(props) {
                 />
                 <RutaAutenticada
                   exact
+                  path="/tramite/notas/:id/nueva"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={NuevaNota}
+                />
+                <RutaAutenticada
+                  exact
                   path="/tramite/recepcion/:id"
                   autenticadoFirebase={firebase.auth.currentUser}
                   component={visualizarRecepcion}
@@ -140,6 +149,12 @@ function App(props) {
                   path="/tramite/traslado/:id"
                   autenticadoFirebase={firebase.auth.currentUser}
                   component={visualizarTraslado}
+                />
+                <RutaAutenticada
+                  exact
+                  path="/tramite/notas/:id"
+                  autenticadoFirebase={firebase.auth.currentUser}
+                  component={verNotas}
                 />
                 <RutaAutenticada
                   exact

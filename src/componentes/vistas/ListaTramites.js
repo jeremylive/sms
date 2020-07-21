@@ -12,22 +12,20 @@ import {
   Button,
   CardContent,
   CardActions,
-  Grow,
-  Popper,
   MenuItem,
-  MenuList,
-  ClickAwayListener,
-  ButtonGroup,
   Dialog,
   DialogTitle,
   DialogContent,
   Select,
   DialogActions,
+  Divider
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
+//Iconos
 import HomeIcon from "@material-ui/icons/Home";
-import { openMensajePantalla } from "../sesion/actions/snackbarAction";
+import SearchIcon from '@material-ui/icons/Search';
 
+import { openMensajePantalla } from "../sesion/actions/snackbarAction";
 import logo from "../../logo.svg";
 import FormControl from "@material-ui/core/FormControl";
 import NativeSelect from "@material-ui/core/NativeSelect";
@@ -183,6 +181,10 @@ class ListaTramites extends Component {
 
   getTraslado = (id) => {
     this.props.history.push("/tramite/traslado/" + id);
+  };
+
+  getNotas = (id) => {
+    this.props.history.push("/tramite/notas/" + id);
   };
 
   //Buscar tramites
@@ -595,7 +597,7 @@ class ListaTramites extends Component {
           <Grid item xs={12} sm={12}>
             <Breadcrumbs aria-label="breadcrumbs">
               <Link color="inherit" style={style.link} to="/tramites">
-                <HomeIcon />
+                <HomeIcon/>
                 Inicio
               </Link>
               <Typography color="textPrimary">Trámites activos</Typography>
@@ -623,15 +625,14 @@ class ListaTramites extends Component {
                 disableElevation
                 onClick={this.buscarTramites.bind(this)}
               >
-                Buscar
+                <SearchIcon/>
               </Button>
             </Grid>
           </Grid>
 
-          {/*Mostrar las rutas*/}
-          {this.state.rutas.map((ruta, index) => (
+          {/*Mostrar las rutas*/
+          this.state.rutas.map((ruta, index) => (
             <Grid item style={style.gridTextfield} key={ruta.idTramite}>
-              {" "}
               Documento: {ruta.idTramite}
               <p></p>
               <Button
@@ -639,8 +640,19 @@ class ListaTramites extends Component {
                 onClick={() => this.abrirDialogConUsuario(ruta.idTramite)}
                 color="primary"
                 size="small"
+                style={{marginRight:"10px"}}
+                disableElevation
               >
                 Estado
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                disableElevation
+                onClick={() => this.getNotas(ruta.idTramite)}
+              >
+                Ver notas
               </Button>
               <p></p>
               <Grid
@@ -656,6 +668,7 @@ class ListaTramites extends Component {
                   </Grid>
                 ))}
               </Grid>
+              <Divider style={{margin:"10px"}}/>
             </Grid>
           ))}
         </Paper>
@@ -666,127 +679,6 @@ class ListaTramites extends Component {
 
 export default consumerFirebase(ListaTramites);
 
-/*
-    //Carga las recepciones
-    let objectQuery = this.props.firebase.db
-      .collection("Recepciones")
-      .orderBy("fecha");
-    const snapshot = await objectQuery.get();
-    const arrayRecepcion = snapshot.docs.map((doc) => {
-      let data = doc.data();
-      let id = doc.id;
-      return { id, ...data };
-    });
-    this.setState({recepciones: arrayRecepcion});
-    console.log(this.state.recepciones);
-
-    //Carga los traslados
-    let objectQuery = this.props.firebase.db
-    .collection("Traslados")
-    .orderBy("fecha");
-    const snapshot = await objectQuery.get();
-    const arrayTraslado = snapshot.docs.map((doc) => {
-      let data = doc.data();
-      let id = doc.id;
-      return { id, ...data };
-    });
-    this.setState({traslados: arrayTraslado});
-
-    //Carga las asignaciones
-    let objectQuery = this.props.firebase.db
-      .collection("Asignaciones")
-      .orderBy("fecha");
-    const snapshot = await objectQuery.get();
-    const arrayAsignacion = snapshot.docs.map((doc) => {
-      let data = doc.data();
-      let id = doc.id;
-      return { id, ...data };
-    });
-    this.setState({asignaciones: arrayAsignacion});
-    */
-
-/*
-        //Cargar todas los traslados que cumplan la busqueda
-        let objectQuery = this.props.firebase.db
-          .collection("Traslados")
-          .orderBy("fecha")
-          .where(
-            "keywords",
-            "array-contains",
-            self.state.textoBusqueda.toLowerCase()
-          );
-
-        if (self.state.textoBusqueda.trim() === "") {
-          objectQuery = this.props.firebase.db
-            .collection("Traslados")
-            .orderBy("fecha");
-        }
-
-        objectQuery.get().then((snapshot) => {
-          const arrayInmueble = snapshot.docs.map((doc) => {
-            let data = doc.data();
-            let id = doc.id;
-            return { id, ...data };
-          });
-
-          this.setState({
-            traslados: arrayInmueble,
-          });
-        });
-
-        //Cargar todas las asignaciones que cumplan la busqueda
-        let objectQuery2 = this.props.firebase.db
-          .collection("Asignaciones")
-          .orderBy("fecha")
-          .where(
-            "keywords",
-            "array-contains",
-            self.state.textoBusqueda.toLowerCase()
-          );
-
-        if (self.state.textoBusqueda.trim() === "") {
-          objectQuery2 = this.props.firebase.db
-            .collection("Asignaciones")
-            .orderBy("fecha");
-        }
-
-        objectQuery2.get().then((snapshot2) => {
-          const arrayInmueble = snapshot2.docs.map((doc) => {
-            let data = doc.data();
-            let id = doc.id;
-            return { id, ...data };
-          });
-
-          this.setState({
-            asignaciones: arrayInmueble,
-          });
-        });
-
-        //Cargar todas las recepciones que cumplan la busqueda
-        let objectQuery3 = this.props.firebase.db
-          .collection("Recepciones")
-          .orderBy("fecha")
-          .where(
-            "keywords",
-            "array-contains",
-            self.state.textoBusqueda.toLowerCase()
-          );
-
-        if (self.state.textoBusqueda.trim() === "") {
-          objectQuery3 = this.props.firebase.db
-            .collection("Recepciones")
-            .orderBy("fecha");
-        }
-
-        objectQuery3.get().then((snapshot3) => {
-          const arrayInmueble = snapshot3.docs.map((doc) => {
-            let data = doc.data();
-            let id = doc.id;
-            return { id, ...data };
-          });
-          this.setState({ recepciones: arrayInmueble });
-        });
-      */
 
 {
   /* <FormControl fullWidth color="finish">
