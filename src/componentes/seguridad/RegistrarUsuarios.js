@@ -51,6 +51,7 @@ class RegistrarUsuarios extends Component {
       apellido: "",
       email: "",
       password: "",
+      role: "ADMINISTRADOR"
     },
   };
 

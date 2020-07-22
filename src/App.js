@@ -6,7 +6,7 @@ import ListaInmuebles from "./componentes/vistas/ListaInmuebles";
 import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "./theme/theme";
 import AppNavbar from "./componentes/layout/AppNavbar";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import RegistrarUsuarios from "./componentes/seguridad/RegistrarUsuarios";
 import Login from "./componentes/seguridad/Login";
@@ -181,6 +181,11 @@ function App(props) {
                   exact
                   component={LoginTelefono}
                 />
+                {/*Redirige a la pagina de login en lugar de mostrar una página en blanco*/}
+                <Route exact path="/">
+                  <Redirect to="/auth/login" />
+                </Route>
+
               </Switch>
             </Grid>
           </MuiThemeProvider>

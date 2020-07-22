@@ -32,7 +32,7 @@ const style = {
   },
   avatar: {
     margin: 8,
-    backgroundColor: "red",
+    backgroundColor: "#10A75F",
   },
   comboBox: {
     width: 435,
@@ -152,10 +152,13 @@ const PerfilUsuario = (props) => {
   return sesion ? (
     <Container component="main" maxWidth="md" justify="center">
       <div style={style.paper}>
-        <Avatar style={style.avatar} src={estado.foto || reactFoto} />
-        <Typography component="h1" variant="h5">
-          Perfil de Cuenta
-        </Typography>
+        <Grid container style={{alignItems:"center"}}>
+          {/*Si no encuentra la foto en src muestra la letra inicial del nombre */}
+          <Avatar alt={estado.nombre} src={estado.foto||"/"} style={style.avatar}/>
+          <Typography component="h1" variant="h5">
+            Perfil de usuario
+          </Typography>
+        </Grid>
         <form style={style.form}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
@@ -201,14 +204,14 @@ const PerfilUsuario = (props) => {
             <Grid item xs={12} md={6}>
                 <TextField
                   select
-                  label="Ingrese su role"
+                  label="Rol"
                   fullWidth
                   name="role"
                   style={style.comboBox}
                   onChange={cambiarDato}
                   value={estado.role}
                 >
-                  <MenuItem value={"0"}>Seleccione Rol</MenuItem>
+                  <MenuItem value={""}>Seleccione un Rol</MenuItem>
                   <MenuItem value={"ADMINISTRADOR"}>Administrador</MenuItem>
                   <MenuItem value={"OPERADOR"}>Operador</MenuItem>
                 </TextField>

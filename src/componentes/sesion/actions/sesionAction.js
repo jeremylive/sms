@@ -50,6 +50,7 @@ export const crearUsuario = (dispatch, firebase, usuario) => {
               email: usuario.email,
               nombre: usuario.nombre,
               apellido: usuario.apellido,
+              role: usuario.role
             },
             { merge: true }
           )

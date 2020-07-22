@@ -17,14 +17,14 @@ import { Link } from "react-router-dom";
 
 const style = {
   paper: {
-    marginTop: 9,
+    marginTop: "20px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   avatar: {
     margin: 5,
-    backgroundColor: "red",
+    backgroundColor: "#10A75F",
   },
   form: {
     width: "100%",
@@ -32,7 +32,7 @@ const style = {
   },
   submit: {
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   }
 };
 
@@ -109,12 +109,12 @@ class Login extends Component {
             <LockOutLineIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Ingrese Usuario
+            Inicio de sesión
           </Typography>
           <form style={style.form}>
             <TextField
               variant="outlined"
-              label="E-mail"
+              label="Correo electrónico"
               name="email"
               fullWidth
               margin="normal"
@@ -123,7 +123,7 @@ class Login extends Component {
             />
             <TextField
               variant="outlined"
-              label="Password"
+              label="Contraseña"
               type="password"
               name="password"
               fullWidth
@@ -142,31 +142,31 @@ class Login extends Component {
               Ingresar
             </Button>
 
-            <Grid container >
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              style={style.submit}
+              href="/auth/loginTelefono"
+            >
+              Ingrese con su teléfono
+            </Button>
+
+            <Grid container style={{marginTop:"10px"}}>
             <Grid item xs>
                 <Link href="#" variant="body2" onClick={this.resetearPassword}>
-                  {"Olvido su contraseña?"}
+                  {"¿Olvidó su contraseña?"}
                 </Link>
               </Grid>
 
               <Grid item>
                 <Link to="/auth/registrarusuario" variant="body2">
-                  {"No tienes cuenta? Resgistrate"}
+                  {"Registrar un usuario nuevo"}
                 </Link>
               </Grid>
               
             </Grid>
           </form>
-
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            style={style.submit}
-            href="/auth/loginTelefono"
-          >
-            Ingrese con su telefono
-          </Button>
 
         </div>
       </Container>
