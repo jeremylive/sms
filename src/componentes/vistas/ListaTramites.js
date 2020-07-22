@@ -18,12 +18,12 @@ import {
   DialogContent,
   Select,
   DialogActions,
-  Divider
+  Divider,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 //Iconos
 import HomeIcon from "@material-ui/icons/Home";
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from "@material-ui/icons/Search";
 
 import { openMensajePantalla } from "../sesion/actions/snackbarAction";
 import logo from "../../logo.svg";
@@ -566,9 +566,11 @@ class ListaTramites extends Component {
                   <MenuItem value={"Aprobado"}>Aprobado</MenuItem>
                   <MenuItem value={"Rechazado"}>Rechazado</MenuItem>
                   <MenuItem value={"Prevencion"}>Prevención</MenuItem>
-                  <MenuItem value={"En_proceso"}>En proceso</MenuItem>
+                  <MenuItem value={"En proceso"}>En proceso</MenuItem>
                 </Select>
-                <this.imprimirEstado></this.imprimirEstado>
+
+
+                {/* <this.imprimirEstado></this.imprimirEstado> */}
               </Grid>
               <Grid item xs={6} sm={6}>
                 <Button
@@ -597,7 +599,7 @@ class ListaTramites extends Component {
           <Grid item xs={12} sm={12}>
             <Breadcrumbs aria-label="breadcrumbs">
               <Link color="inherit" style={style.link} to="/tramites">
-                <HomeIcon/>
+                <HomeIcon />
                 Inicio
               </Link>
               <Typography color="textPrimary">Trámites activos</Typography>
@@ -625,52 +627,71 @@ class ListaTramites extends Component {
                 disableElevation
                 onClick={this.buscarTramites.bind(this)}
               >
-                <SearchIcon/>
+                <SearchIcon />
               </Button>
             </Grid>
           </Grid>
 
-          {/*Mostrar las rutas*/
-          this.state.rutas.map((ruta, index) => (
-            <Grid item style={style.gridTextfield} key={ruta.idTramite}>
-              Documento: {ruta.idTramite}
-              <p></p>
-              <Button
-                variant="contained"
-                onClick={() => this.abrirDialogConUsuario(ruta.idTramite)}
-                color="primary"
-                size="small"
-                style={{marginRight:"10px"}}
-                disableElevation
-              >
-                Estado
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                disableElevation
-                onClick={() => this.getNotas(ruta.idTramite)}
-              >
-                Ver notas
-              </Button>
-              <p></p>
-              <Grid
-                container
-                spacing={1}
-                container
-                direction="row"
-                alignitems="stretch"
-              >
-                {this.state.rutas[index].tareas.map((tarea) => (
-                  <Grid item key={tarea.id} xs={12} sm={6} md={2}>
-                    {this.renderTarea(tarea, ruta.idTramite)}
-                  </Grid>
-                ))}
+          {
+            /*Mostrar las rutas*/
+            this.state.rutas.map((ruta, index) => (
+              <Grid item style={style.gridTextfield} key={ruta.idTramite}>
+                Documento: {ruta.idTramite}
+                <p></p>
+                {
+                  //Mostrar las notas
+                  this.state.tramites.map((tramite) => (
+                    <Grid
+                      item
+                      key={tramite.id}
+                      xs={12}
+                      sm={6}
+                      md={2}
+                      style={{ minWidth: "100%" }}
+                    >
+                      Estado: {tramite.estado}
+                      
+                    </Grid>
+                  ))
+                }
+                <p></p>
+                <Button
+                  variant="contained"
+                  onClick={() => this.abrirDialogConUsuario(ruta.idTramite)}
+                  color="primary"
+                  size="small"
+                  style={{ marginRight: "10px" }}
+                  disableElevation
+                >
+                  Estado
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  disableElevation
+                  onClick={() => this.getNotas(ruta.idTramite)}
+                >
+                  Ver notas
+                </Button>
+                <p></p>
+                <Grid
+                  container
+                  spacing={1}
+                  container
+                  direction="row"
+                  alignitems="stretch"
+                >
+                  {this.state.rutas[index].tareas.map((tarea) => (
+                    <Grid item key={tarea.id} xs={12} sm={6} md={2}>
+                      {this.renderTarea(tarea, ruta.idTramite)}
+                    </Grid>
+                  ))}
+                </Grid>
+                <Divider style={{ margin: "10px" }} />
               </Grid>
-              <Divider style={{margin:"10px"}}/>
-            </Grid>
-          ))}
+            ))
+          }
         </Paper>
       </Container>
     );
@@ -678,7 +699,6 @@ class ListaTramites extends Component {
 }
 
 export default consumerFirebase(ListaTramites);
-
 
 {
   /* <FormControl fullWidth color="finish">
