@@ -68,6 +68,10 @@ const style = {
     marginLeft: "10px",
     height: 56,
   },
+  botonTramite: {
+    marginRight: "10px",
+    marginBottom: "15px"
+  }
 };
 
 class ListaTramites extends Component {
@@ -636,45 +640,30 @@ class ListaTramites extends Component {
             /*Mostrar las rutas*/
             this.state.rutas.map((ruta, index) => (
               <Grid item style={style.gridTextfield} key={ruta.idTramite}>
-                Documento: {ruta.idTramite}
-                <p></p>
-                {
-                  //Mostrar las notas
-                  this.state.tramites.map((tramite) => (
-                    <Grid
-                      item
-                      key={tramite.id}
-                      xs={12}
-                      sm={6}
-                      md={2}
-                      style={{ minWidth: "100%" }}
-                    >
-                      Estado: {tramite.estado}
-                      
-                    </Grid>
-                  ))
-                }
-                <p></p>
+                <Grid container style={{marginBottom:"5px"}}>
+                  <Typography variant="body1">Documento: {ruta.idTramite}</Typography>
+                  <Typography variant="body1" style={{marginLeft:"10px"}}>Estado: {this.state.tramites[index].estado}</Typography> 
+                </Grid>
                 <Button
                   variant="contained"
                   onClick={() => this.abrirDialogConUsuario(ruta.idTramite)}
                   color="primary"
                   size="small"
-                  style={{ marginRight: "10px" }}
+                  style={style.botonTramite}
                   disableElevation
                 >
-                  Estado
+                  Cambiar estado
                 </Button>
                 <Button
                   variant="contained"
                   color="primary"
                   size="small"
+                  style={style.botonTramite}
                   disableElevation
                   onClick={() => this.getNotas(ruta.idTramite)}
                 >
                   Ver notas
                 </Button>
-                <p></p>
                 <Grid
                   container
                   spacing={1}
