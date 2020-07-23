@@ -76,19 +76,46 @@ const style = {
 
 class ListaTramites extends Component {
   state = {
-    traslados: [],
-    asignaciones: [],
-    recepciones: [],
-
     tramites: [],
     rutas: [],
-
     textoBusqueda: "",
 
     selectEstado: "0",
     estadoDialog: false,
     idTramiteActual: 0,
   };
+
+  /*Ejemplo de propiedad tramites
+    {
+      {id: "Tramite-1",
+       estado: "X",
+       fechaInicio: X,
+       keywords: {"Tramite-1","Julio",...}
+      } ,
+      {id: "Tramite-2",
+       estado: "Y",
+       fechaInicio: Y,
+       keywords: {"Tramite-2","Julio",...}
+      }
+    }
+
+    Ejemplo de propiedad rutas
+    {
+      {idTramite: "Tramite-1",
+       tareas: {  
+                  { tipoTarea: "Asignaciones",
+                    id: "abCdEFg",
+                    adjuntos: {"Link a foto 1","Link a foto 2"},
+                    asignacionA: "Persona 1",
+                    asignacionPor: "Persona 2"
+                    asunto: "Prueba",
+                    fecha: "X"
+                    idTramite: "Tramite-1"
+                  } , ... un objeto por cada tarea del Tramite-1, tiene campos diferentes según la tabla del tipo de tarea
+                }
+      } , ... un objeto por cada tramite
+    }
+  */
 
   async componentDidMount() {
     //Cargar trámites
