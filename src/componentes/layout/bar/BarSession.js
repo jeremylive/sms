@@ -154,7 +154,7 @@ class BarSession extends Component {
           <IconButton color="inherit" onClick={this.toggleDrawer("left", true)}>
             <i className="material-icons">menu</i>
           </IconButton>
-          <Typography variant="h6">Home</Typography>
+          <Typography variant="h6">Menú principal</Typography>
           <div className={classes.grow}></div>
           <div className={classes.sectionDesktop}>
             <IconButton color="inherit" component={Link} to="/auth/registrarusuario">
@@ -170,7 +170,7 @@ class BarSession extends Component {
               Salir
             </Button>
             <Button color="inherit" onClick={this.goInicio}>{textoUsuario}</Button>
-            <Avatar src={usuario.foto || fotoUsuairoTemp} />
+            <Avatar alt={usuario.nombre} src={usuario.foto || "/"} style={{backgroundColor:"#ffffff", color:"#10A75F", alignSelf:"center"}}/>
           </div>
           <div className={classes.sectionMobile}>
             <IconButton
