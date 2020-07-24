@@ -14,10 +14,12 @@ import {
   TableCell,
   TableRow,
   MenuItem,
+  Checkbox,
 } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
 import { openMensajePantalla } from "../sesion/actions/snackbarAction";
 import { enviarNotification } from "../sesion/actions/notificationAction";
+
 
 const style = {
   container: {
@@ -56,9 +58,10 @@ class visualizarAsignacion extends Component {
       asignacionA: "",
       asunto: "",
       adjuntos: [],
-      confirmarAsignacion: "",
+      confirmarAsignacion: false,
     },
     usuarios: [],
+    nombre_completo: ""
   };
 
   entradaDatoEnEstado = (e) => {
@@ -67,14 +70,24 @@ class visualizarAsignacion extends Component {
     this.setState({ asignacion });
   };
 
+  confirmoTarea = (e) => {
+    this.setState({
+      confirmarAsignacion : e.target.checked
+    });
+  };
+
   async componentDidMount() {
     const { id } = this.props.match.params;
 
-    const asignacionCollection = this.props.firebase.db.collection("Asignaciones");
+    const asignacionCollection = this.props.firebase.db.collection(
+      "Asignaciones"
+    );
     const asignacionDB = await asignacionCollection.doc(id).get();
     let asignacionData = asignacionDB.data();
     //Ajusta el formato de la fecha
-    let fechaString = asignacionData.fecha.toDate().toLocaleString(undefined, { hour12: "true" });
+    let fechaString = asignacionData.fecha
+      .toDate()
+      .toLocaleString(undefined, { hour12: "true" });
     asignacionData.fecha = fechaString;
 
     this.setState({
@@ -93,19 +106,46 @@ class visualizarAsignacion extends Component {
 
       this.setState({ usuarios: arrayUsuarios });
     });
+    //Datos de confirmar asignacion
+    const usuarioCollection = this.props.firebase.db.collection("Users");
+    const usuarioDB = await usuarioCollection
+      .doc(this.props.firebase.auth.currentUser.uid)
+      .get();
+    let usuarioData = usuarioDB.data();
+
+    let nombre = usuarioData.nombre;
+    let apellido = usuarioData.apellido;
+    let nombreCompleto = nombre + " " + apellido;
+    this.setState({nombre_completo: nombreCompleto});
+
+    console.log(this.state.asignacion.asignacionA);
+    console.log(this.state.nombre_completo);
+
   }
 
+  // confirmarTarea = () => {
+  //   // if(this.state.asignacion.asignacionA == this.state.nombre_completo){
+  //   if (0 == 0) {
+  //     console.log("son iguales");
+
+  //   } else {
+  //     console.log("no son iguales");
+  //   }
+  // }
+
   guardarAsignacion = async () => {
-    this.props.firebase.db.collection("Asignaciones")
-    .doc(this.props.match.params)
-    .update("confirmarAsignacion", this.state.asignacion.confirmarAsignacion)
-    .catch((error) => {
-      openMensajePantalla({
-        open: true,
-        mensaje: error,
+    console.log(this.props.match.params);
+    this.props.firebase.db
+      .collection("Asignaciones")
+      .doc(this.props.match.params.id)
+      .update("confirmarAsignacion", this.state.asignacion.confirmarAsignacion)
+      .catch((error) => {
+        openMensajePantalla({
+          open: true,
+          mensaje: error,
+        });
       });
-    });
-  }
+  };
 
   render() {
     return (
@@ -164,40 +204,15 @@ class visualizarAsignacion extends Component {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
+            Confirmo la asignación
+            <Checkbox
               name="confirmarAsignacion"
-              label="Confirmó la Asignación"
-              fullWidth
-              rowsMax="4"
-              multiline
-              onChange={this.entradaDatoEnEstado}
-              value={this.state.asignacion.confirmarAsignacion}
+              label="Confirmo Asignación"
+              checked={this.state.asignacion.confirmarAsignacion}
+              onChange={this.confirmoTarea}
+              color="primary"
             />
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            <TextField
-              select
-              name="confirmarAsignacion"
-              label="Cambiar confirmado"
-              fullWidth
-              margin="dense"
-              style={style.campoTexto}
-              onChange={this.entradaDatoEnEstado}
-              value={this.state.asignacion.confirmarAsignacion}
-            >
-              <MenuItem value={""}>Seleccione el usuario</MenuItem>
-              {this.state.usuarios.map((usuario) => (
-                <MenuItem
-                  key={usuario.id}
-                  value={usuario.nombre + " " + usuario.apellido}
-                >
-                  {usuario.nombre + " " + usuario.apellido}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
+         </Grid>
 
           <Grid item xs={12} sm={6}>
             <Table>
@@ -230,7 +245,6 @@ class visualizarAsignacion extends Component {
               </Button>
             </Grid>
           </Grid>
-
         </Paper>
       </Container>
     );

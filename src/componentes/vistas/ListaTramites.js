@@ -292,7 +292,6 @@ class ListaTramites extends Component {
       console.log("No seleccionó ningún estado");
       return;
     }
-    console.log(this.state.selectEstado);
     //Inserta en tramite el estado
     this.props.firebase.db
       .collection("Tramites")
@@ -580,7 +579,7 @@ class ListaTramites extends Component {
       <Container style={style.cardGrid}>
         <Dialog
           maxWidth="xs"
-          fullWidth="true"
+          fullWidth
           open={this.state.estadoDialog}
           onClose={() => {
             this.setState({ estadoDialog: false });
