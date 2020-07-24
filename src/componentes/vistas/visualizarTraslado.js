@@ -13,11 +13,11 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  MenuItem,
 } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
-import {openMensajePantalla} from  '../sesion/actions/snackbarAction';
-import {enviarNotification} from '../sesion/actions/notificationAction';
-
+import { openMensajePantalla } from "../sesion/actions/snackbarAction";
+import { enviarNotification } from "../sesion/actions/notificationAction";
 
 const style = {
   container: {
@@ -48,7 +48,6 @@ const style = {
   },
 };
 
-
 class visualizarTraslado extends Component {
   state = {
     traslado: {
@@ -57,7 +56,9 @@ class visualizarTraslado extends Component {
       trasladoA: "",
       asunto: "",
       adjuntos: [],
+      confirmarTraslado: "",
     },
+    usuarios: [],
   };
 
   entradaDatoEnEstado = (e) => {
@@ -78,6 +79,19 @@ class visualizarTraslado extends Component {
 
     this.setState({
       traslado: trasladoData,
+    });
+    //Obtiene los usuarios para llenar el comboBox
+    const usuariosQuery = this.props.firebase.db
+      .collection("Users")
+      .orderBy("apellido");
+    usuariosQuery.get().then((resultados) => {
+      let arrayUsuarios = resultados.docs.map((usuario) => {
+        let id = usuario.id;
+        let data = usuario.data();
+        return { id, ...data };
+      });
+
+      this.setState({ usuarios: arrayUsuarios });
     });
   }
 
@@ -151,7 +165,29 @@ class visualizarTraslado extends Component {
                   : ""}
               </TableBody>
             </Table>
+          </Grid>
 
+          <Grid item xs={12} md={6}>
+            <TextField
+              select
+              name="confirmarTraslado"
+              label="Confirmación de Traslado por"
+              fullWidth
+              margin="dense"
+              style={style.campoTexto}
+              onChange={this.entradaDatoEnEstado}
+              value={this.state.traslado.confirmarTranslado}
+            >
+              <MenuItem value={""}>Seleccione el usuario</MenuItem>
+              {this.state.usuarios.map((usuario) => (
+                <MenuItem
+                  key={usuario.id}
+                  value={usuario.nombre + " " + usuario.apellido}
+                >
+                  {usuario.nombre + " " + usuario.apellido}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
         </Paper>
       </Container>

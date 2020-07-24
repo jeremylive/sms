@@ -13,11 +13,11 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  MenuItem,
 } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
-import {openMensajePantalla} from  '../sesion/actions/snackbarAction';
-import {enviarNotification} from '../sesion/actions/notificationAction';
-
+import { openMensajePantalla } from "../sesion/actions/snackbarAction";
+import { enviarNotification } from "../sesion/actions/notificationAction";
 
 const style = {
   container: {
@@ -56,7 +56,9 @@ class visualizarAsignacion extends Component {
       asignacionA: "",
       asunto: "",
       adjuntos: [],
+      confirmarAsignacion: "",
     },
+    usuarios: [],
   };
 
   entradaDatoEnEstado = (e) => {
@@ -77,6 +79,31 @@ class visualizarAsignacion extends Component {
 
     this.setState({
       asignacion: asignacionData,
+    });
+    //Obtiene los usuarios para llenar el comboBox
+    const usuariosQuery = this.props.firebase.db
+      .collection("Users")
+      .orderBy("apellido");
+    usuariosQuery.get().then((resultados) => {
+      let arrayUsuarios = resultados.docs.map((usuario) => {
+        let id = usuario.id;
+        let data = usuario.data();
+        return { id, ...data };
+      });
+
+      this.setState({ usuarios: arrayUsuarios });
+    });
+  }
+
+  guardarAsignacion = async () => {
+    this.props.firebase.db.collection("Asignaciones")
+    .doc(this.props.match.params)
+    .update("confirmarAsignacion", this.state.asignacion.confirmarAsignacion)
+    .catch((error) => {
+      openMensajePantalla({
+        open: true,
+        mensaje: error,
+      });
     });
   }
 
@@ -136,6 +163,42 @@ class visualizarAsignacion extends Component {
             />
           </Grid>
 
+          <Grid item xs={12} md={6}>
+            <TextField
+              name="confirmarAsignacion"
+              label="Confirmó la Asignación"
+              fullWidth
+              rowsMax="4"
+              multiline
+              onChange={this.entradaDatoEnEstado}
+              value={this.state.asignacion.confirmarAsignacion}
+            />
+          </Grid>
+          
+          <Grid item xs={12} md={6}>
+            <TextField
+              select
+              name="confirmarAsignacion"
+              label="Cambiar confirmado"
+              fullWidth
+              margin="dense"
+              style={style.campoTexto}
+              onChange={this.entradaDatoEnEstado}
+              value={this.state.asignacion.confirmarAsignacion}
+            >
+              <MenuItem value={""}>Seleccione el usuario</MenuItem>
+              {this.state.usuarios.map((usuario) => (
+                <MenuItem
+                  key={usuario.id}
+                  value={usuario.nombre + " " + usuario.apellido}
+                >
+                  {usuario.nombre + " " + usuario.apellido}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+
           <Grid item xs={12} sm={6}>
             <Table>
               <TableBody>
@@ -151,6 +214,23 @@ class visualizarAsignacion extends Component {
               </TableBody>
             </Table>
           </Grid>
+
+          <Grid container justify="center">
+            <Grid item xs={12} md={6}>
+              <Button
+                type="button"
+                fullWidth
+                variant="contained"
+                size="large"
+                color="primary"
+                style={style.submit}
+                onClick={this.guardarAsignacion}
+              >
+                Guardar
+              </Button>
+            </Grid>
+          </Grid>
+
         </Paper>
       </Container>
     );
