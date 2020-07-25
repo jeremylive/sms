@@ -61,7 +61,8 @@ class visualizarAsignacion extends Component {
       confirmarAsignacion: false,
     },
     usuarios: [],
-    nombre_completo: ""
+    nombre_completo: "",
+    confirmarAsignacionA: false
   };
 
   entradaDatoEnEstado = (e) => {
@@ -72,11 +73,12 @@ class visualizarAsignacion extends Component {
 
   confirmoTarea = (e) => {
     this.setState({
-      confirmarAsignacion : e.target.checked
+      confirmarAsignacionA : e.target.checked
     });
   };
 
   async componentDidMount() {
+    //Cargo asignacion
     const { id } = this.props.match.params;
 
     const asignacionCollection = this.props.firebase.db.collection(
@@ -121,30 +123,36 @@ class visualizarAsignacion extends Component {
     console.log(this.state.asignacion.asignacionA);
     console.log(this.state.nombre_completo);
 
+    console.log(this.state.asignacion.confirmarAsignacion);
+
   }
 
-  // confirmarTarea = () => {
-  //   // if(this.state.asignacion.asignacionA == this.state.nombre_completo){
-  //   if (0 == 0) {
-  //     console.log("son iguales");
-
-  //   } else {
-  //     console.log("no son iguales");
-  //   }
-  // }
-
   guardarAsignacion = async () => {
-    console.log(this.props.match.params);
-    this.props.firebase.db
-      .collection("Asignaciones")
-      .doc(this.props.match.params.id)
-      .update("confirmarAsignacion", this.state.asignacion.confirmarAsignacion)
-      .catch((error) => {
-        openMensajePantalla({
-          open: true,
-          mensaje: error,
+
+     // if(this.state.asignacion.asignacionA == this.state.nombre_completo){
+    if (0 == 0) {
+      console.log("son iguales");
+        
+      //this.setState({ confirmarAsignacionA : true });
+
+      this.props.firebase.db
+        .collection("Asignaciones")
+        .doc(this.props.match.params.id)
+        .update("confirmarAsignaciona", this.state.confirmarAsignacionA)
+        .catch((error) => {
+          openMensajePantalla({
+            open: true,
+            mensaje: error,
+          });
         });
-      });
+
+    } else {
+      console.log("no son iguales");
+    }
+
+
+    console.log(this.state.asignacion.confirmarAsignacion);
+    console.log(this.state.confirmarAsignacionA);
   };
 
   render() {
@@ -206,13 +214,13 @@ class visualizarAsignacion extends Component {
           <Grid item xs={12} md={6}>
             Confirmo la asignación
             <Checkbox
-              name="confirmarAsignacion"
               label="Confirmo Asignación"
-              checked={this.state.asignacion.confirmarAsignacion}
+              value="confirmarAsignacionA"
+              checked={this.state.confirmarAsignacion}
               onChange={this.confirmoTarea}
               color="primary"
             />
-         </Grid>
+        </Grid>
 
           <Grid item xs={12} sm={6}>
             <Table>
@@ -241,7 +249,7 @@ class visualizarAsignacion extends Component {
                 style={style.submit}
                 onClick={this.guardarAsignacion}
               >
-                Guardar
+                Confirmo Asignación
               </Button>
             </Grid>
           </Grid>
