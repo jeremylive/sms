@@ -62,7 +62,8 @@ class visualizarAsignacion extends Component {
     },
     usuarios: [],
     nombre_completo: "",
-    confirmarAsignacionA: false
+    confirmarAsignacionA: false,
+    confirmadoA: ""
   };
 
   entradaDatoEnEstado = (e) => {
@@ -120,25 +121,24 @@ class visualizarAsignacion extends Component {
     let nombreCompleto = nombre + " " + apellido;
     this.setState({nombre_completo: nombreCompleto});
 
-    console.log(this.state.asignacion.asignacionA);
-    console.log(this.state.nombre_completo);
+    //Imprimo confirmado
+    const confirmCollection = this.props.firebase.db.collection("Asignaciones");
+    const confirmDB = await confirmCollection.doc(this.props.match.params.id).get();
+    let confirmData = confirmDB.data();
 
-    console.log(this.state.asignacion.confirmarAsignacion);
-
+    let confirmado = confirmData.confirmarAsignacion;
+    this.setState({ confirmadoA: confirmado});
+    console.log(this.state.confirmadoA);
   }
 
   guardarAsignacion = async () => {
 
      // if(this.state.asignacion.asignacionA == this.state.nombre_completo){
     if (0 == 0) {
-      console.log("son iguales");
-        
-      //this.setState({ confirmarAsignacionA : true });
-
       this.props.firebase.db
         .collection("Asignaciones")
         .doc(this.props.match.params.id)
-        .update("confirmarAsignaciona", this.state.confirmarAsignacionA)
+        .update("confirmarAsignacion", this.state.confirmarAsignacionA)
         .catch((error) => {
           openMensajePantalla({
             open: true,
@@ -149,11 +149,8 @@ class visualizarAsignacion extends Component {
     } else {
       console.log("no son iguales");
     }
-
-
-    console.log(this.state.asignacion.confirmarAsignacion);
-    console.log(this.state.confirmarAsignacionA);
   };
+
 
   render() {
     return (
@@ -215,12 +212,14 @@ class visualizarAsignacion extends Component {
             Confirmo la asignación
             <Checkbox
               label="Confirmo Asignación"
-              value="confirmarAsignacionA"
-              checked={this.state.confirmarAsignacion}
+              value="confirmarAsignacion"
+              checked={this.state.confirmarAsignacionA}
               onChange={this.confirmoTarea}
               color="primary"
             />
-        </Grid>
+          </Grid>
+
+          <p>El estado de confirmación esta en: {this.state.confirmadoA}</p>
 
           <Grid item xs={12} sm={6}>
             <Table>
