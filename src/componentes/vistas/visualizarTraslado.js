@@ -13,11 +13,10 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  MenuItem,
+  Checkbox,
 } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
 import { openMensajePantalla } from "../sesion/actions/snackbarAction";
-import { enviarNotification } from "../sesion/actions/notificationAction";
 
 const style = {
   container: {
@@ -56,7 +55,7 @@ class visualizarTraslado extends Component {
       trasladoA: "",
       asunto: "",
       adjuntos: [],
-      confirmarTraslado: "",
+      confirmado: false,
     },
     usuarios: [],
   };
@@ -94,6 +93,29 @@ class visualizarTraslado extends Component {
       this.setState({ usuarios: arrayUsuarios });
     });
   }
+
+//Confirmar traslado
+confirmarTraslado = async () => {
+ if (0 == 0) {
+   this.props.firebase.db
+     .collection("Traslados")
+     .doc(this.props.match.params.id)
+     .update("confirmado", true)
+     .then(() => {
+       let traslado_ = Object.assign({}, this.state.traslado);
+       traslado_.confirmado = true;
+       this.setState({traslado:traslado_});
+     })
+     .catch((error) => {
+       openMensajePantalla({
+         open: true,
+         mensaje: error,
+       })
+     });
+ } else {
+   console.log("no son iguales");
+ }
+};
 
   render() {
     return (
@@ -151,6 +173,15 @@ class visualizarTraslado extends Component {
             />
           </Grid>
 
+          <Grid item xs={12} md={6}>
+            Traslado confirmado
+            <Checkbox
+              label="Traslado confirmado"
+              checked={this.state.traslado.confirmado}
+              color="primary"
+            />
+          </Grid>
+
           <Grid item xs={12} sm={6}>
             <Table>
               <TableBody>
@@ -167,27 +198,20 @@ class visualizarTraslado extends Component {
             </Table>
           </Grid>
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              select
-              name="confirmarTraslado"
-              label="Confirmación de Traslado por"
-              fullWidth
-              margin="dense"
-              style={style.campoTexto}
-              onChange={this.entradaDatoEnEstado}
-              value={this.state.traslado.confirmarTranslado}
-            >
-              <MenuItem value={""}>Seleccione el usuario</MenuItem>
-              {this.state.usuarios.map((usuario) => (
-                <MenuItem
-                  key={usuario.id}
-                  value={usuario.nombre + " " + usuario.apellido}
-                >
-                  {usuario.nombre + " " + usuario.apellido}
-                </MenuItem>
-              ))}
-            </TextField>
+          <Grid container justify="center">
+            <Grid item xs={12} md={6}>
+              <Button
+                type="button"
+                fullWidth
+                variant="contained"
+                size="large"
+                color="primary"
+                style={style.submit}
+                onClick={this.confirmarTraslado}
+              >
+                Confirmar traslado
+              </Button>
+            </Grid>
           </Grid>
         </Paper>
       </Container>

@@ -18,7 +18,6 @@ import {
 } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
 import { openMensajePantalla } from "../sesion/actions/snackbarAction";
-import { enviarNotification } from "../sesion/actions/notificationAction";
 
 
 const style = {
@@ -58,13 +57,10 @@ class visualizarAsignacion extends Component {
       asignacionA: "",
       asunto: "",
       adjuntos: [],
-      confirmarAsignacion: false,
+      confirmada: false,
     },
     usuarios: [],
     nombre_completo: "",
-    confirmarAsignacionA: false,
-    confirmadoA: "",
-    num: "bien"
   };
 
   entradaDatoEnEstado = (e) => {
@@ -73,19 +69,11 @@ class visualizarAsignacion extends Component {
     this.setState({ asignacion });
   };
 
-  confirmoTarea = (e) => {
-    this.setState({
-      confirmarAsignacionA : e.target.checked
-    });
-  };
-
   async componentDidMount() {
     //Cargo asignacion
     const { id } = this.props.match.params;
 
-    const asignacionCollection = this.props.firebase.db.collection(
-      "Asignaciones"
-    );
+    const asignacionCollection = this.props.firebase.db.collection("Asignaciones");
     const asignacionDB = await asignacionCollection.doc(id).get();
     let asignacionData = asignacionDB.data();
     //Ajusta el formato de la fecha
@@ -94,9 +82,7 @@ class visualizarAsignacion extends Component {
       .toLocaleString(undefined, { hour12: "true" });
     asignacionData.fecha = fechaString;
 
-    this.setState({
-      asignacion: asignacionData,
-    });
+    this.setState({asignacion: asignacionData});
     //Obtiene los usuarios para llenar el comboBox
     const usuariosQuery = this.props.firebase.db
       .collection("Users")
@@ -121,46 +107,27 @@ class visualizarAsignacion extends Component {
     let apellido = usuarioData.apellido;
     let nombreCompleto = nombre + " " + apellido;
     this.setState({nombre_completo: nombreCompleto});
-    //Imprimo confirmado
-    const confirmCollection = this.props.firebase.db.collection("Asignaciones");
-    const confirmDB = await confirmCollection.doc(this.props.match.params.id).get();
-    let confirmData = confirmDB.data();
-
-    let confirmado = confirmData.confirmarAsignacion;
-    this.setState({ confirmadoA: confirmado});
-    console.log(this.state.confirmadoA);
-
-
-   // this.cargarConfirmacion();
-
   }
 
-  // cargarConfirmacion = async () => {
-  //   //Imprimo confirmado
-  //   const confirmCollection = this.props.firebase.db.collection("Asignaciones");
-  //   const confirmDB = await confirmCollection.doc(this.props.match.params.id).get();
-  //   let confirmData = confirmDB.data();
-
-  //   let confirmado = confirmData.confirmarAsignacion;
-  //   this.setState({ confirmadoA: confirmado});
-  //   console.log(this.state.confirmadoA);
-  // }
-
-  guardarAsignacion = async () => {
-
+  //Confirmar asignacion
+  confirmarAsignacion = async () => {
      // if(this.state.asignacion.asignacionA == this.state.nombre_completo){
     if (0 == 0) {
       this.props.firebase.db
         .collection("Asignaciones")
         .doc(this.props.match.params.id)
-        .update("confirmarAsignacion", this.state.confirmarAsignacionA)
+        .update("confirmada", true)
+        .then(() => {
+          let asignacion_ = Object.assign({}, this.state.asignacion);
+          asignacion_.confirmada = true;
+          this.setState({asignacion:asignacion_});
+        })
         .catch((error) => {
           openMensajePantalla({
             open: true,
             mensaje: error,
-          });
+          })
         });
-
     } else {
       console.log("no son iguales");
     }
@@ -224,18 +191,15 @@ class visualizarAsignacion extends Component {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            Confirmo la asignación
+            Asignación confirmada
             <Checkbox
-              label="Confirmo Asignación"
-              value="confirmarAsignacion"
-              checked={this.state.confirmarAsignacionA}
-              onChange={this.confirmoTarea}
+              label="Asignacion confirmada"
+              checked={this.state.asignacion.confirmada}
               color="primary"
             />
           </Grid>
           
-          <p>El estado de confirmación esta en: {this.state.confirmadoA}</p>
-          <p>{this.state.num}</p>
+          <p>El estado de confirmación esta en: {this.state.asignacion.confirmada+""}</p>
 
           <Grid item xs={12} sm={6}>
             <Table>
@@ -262,9 +226,9 @@ class visualizarAsignacion extends Component {
                 size="large"
                 color="primary"
                 style={style.submit}
-                onClick={this.guardarAsignacion}
+                onClick={this.confirmarAsignacion}
               >
-                Confirmo Asignación
+                Confirmar asignación
               </Button>
             </Grid>
           </Grid>
