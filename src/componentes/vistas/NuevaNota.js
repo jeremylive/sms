@@ -55,7 +55,6 @@ class NuevaNota extends Component {
 
   componentDidMount() {
     //Obtiene el id del tramite
-    console.log(this.props.match.params);
     let nota_ = Object.assign({}, this.state.nota);
     nota_.idTramite = this.props.match.params.id;
     this.setState({
@@ -95,9 +94,9 @@ class NuevaNota extends Component {
         <Paper style={style.paper}>
           <Grid item xs={12} md={8}>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link color="inherit" style={style.link} to="/tramites">
+              <Link color="initial" style={style.link} to={"/tramite/notas/"+this.props.match.params.id}>
                 <HomeIcon style={style.homeIcon} />
-                Inicio
+                Notas del trámite {this.props.match.params.id}
               </Link>
               <Typography color="textPrimary">Nueva nota</Typography>
             </Breadcrumbs>

@@ -23,7 +23,7 @@ const style = {
   },
   avatar: {
     margin: 8,
-    backgroundColor: "red",
+    backgroundColor: "#10A75F",
   },
   form: {
     width: "100%",
@@ -126,7 +126,7 @@ class RegistrarUsuarios extends Component {
             <LockOutLineIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Registre su Cuenta
+            Registre su cuenta
           </Typography>
           <form style={style.form}>
             <Grid container spacing={2}>

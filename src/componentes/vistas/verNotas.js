@@ -78,7 +78,7 @@ class verNotas extends Component {
         <Paper style={style.paper}>
           <Grid style={{marginBottom:"10px"}}>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link color="inherit" style={style.link} href="/tramites">
+              <Link color="initial" style={style.link} href="/tramites">
                 <HomeIcon style={style.homeIcon} />
                 Trámites
               </Link>
