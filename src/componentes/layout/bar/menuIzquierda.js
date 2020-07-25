@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export const MenuIzquierda = ({ classes, permisoToGetNotification }) => (
   <div className={classes.list}>
-    <List>
+    {/* <List>
       <ListItem component={Link} button to="/auth/perfil">
         <i className="material-icons">account_box</i>
         <ListItemText
@@ -13,8 +13,16 @@ export const MenuIzquierda = ({ classes, permisoToGetNotification }) => (
         />
       </ListItem>
     </List>
-    <Divider />
+    <Divider /> */}
     
+    <ListItem component={Link} button to="/tramites">
+        <i className="material-icons">business</i>
+        <ListItemText
+          classes={{ primary: classes.listItemText }}
+          primary="Trámites activos"
+        />
+    </ListItem>
+    <Divider/>
     <List>
       <ListItem component={Link} button to="/tramite/recepcion/nuevo">
         <i className="material-icons">add_box</i>
@@ -37,23 +45,27 @@ export const MenuIzquierda = ({ classes, permisoToGetNotification }) => (
           primary="Nuevo Traslado"
         />
       </ListItem>
-      <Divider/>
 
-      <ListItem component={Link} button to="/tramites">
-        <i className="material-icons">business</i>
-        <ListItemText
-          classes={{ primary: classes.listItemText }}
-          primary="Trámites activos"
-        />
-      </ListItem>
 
-      <ListItem button onClick={permisoToGetNotification}>
+
+
+      {/* <ListItem button onClick={permisoToGetNotification}>
         <i className="material-icons">notifications_none</i>
         <ListItemText
           classes={{ primary: classes.listItemText }}
           primary="Recibir Notificaciones"
         />
-      </ListItem>
+      </ListItem> */}
+
+{/* 
+      <ListItem component={Link} button to="/listausuarios">
+        <i className="material-icons">group</i>
+        <ListItemText
+          classes={{ primary: classes.listItemText }}
+          primary="Lista de usuarios"
+        />
+      </ListItem> */}
+
 {/* 
       <ListItem component={Link} button to="/auth/UsuariosCreados">
         <i className="material-icons">group</i>
@@ -62,15 +74,6 @@ export const MenuIzquierda = ({ classes, permisoToGetNotification }) => (
           primary="Usuarios creados"
         />
       </ListItem> */}
-
-
-      <ListItem component={Link} button to="/listausuarios">
-        <i className="material-icons">group</i>
-        <ListItemText
-          classes={{ primary: classes.listItemText }}
-          primary="Lista de usuarios"
-        />
-      </ListItem>
 
       {/* <ListItem component={Link} button to="/inmueble/nuevo">
         <i className="material-icons">add_box</i>

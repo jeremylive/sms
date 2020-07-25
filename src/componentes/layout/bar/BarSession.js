@@ -157,15 +157,15 @@ class BarSession extends Component {
           <Typography variant="h6">Menú principal</Typography>
           <div className={classes.grow}></div>
           <div className={classes.sectionDesktop}>
-            <IconButton color="inherit" component={Link} to="/auth/registrarusuario">
+            {/* <IconButton color="inherit" component={Link} to="/auth/registrarusuario">
               <i className="material-icons">ass_to_queue</i>
-            </IconButton>
-            <IconButton color="inherit" component={Link} to="/tramites">
+            </IconButton> */}
+            {/* <IconButton color="inherit" component={Link} to="/tramites">
               <i className="material-icons">list_alt</i>
-            </IconButton>
-            <IconButton color="inherit" component={Link} to="/listausuarios">
+            </IconButton> */}
+            {/* <IconButton color="inherit" component={Link} to="/listausuarios">
               <i className="material-icons">group</i>
-            </IconButton>
+            </IconButton> */}
             <Button color="inherit" onClick={this.salirSesionApp}>
               Salir
             </Button>
