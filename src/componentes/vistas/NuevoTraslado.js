@@ -63,6 +63,7 @@ class NuevoTraslado extends Component {
       trasladoA: "",
       asunto: "",
       adjuntos: [],
+      confirmado: false,
     },
     archivos: [],
     usuarios: [],

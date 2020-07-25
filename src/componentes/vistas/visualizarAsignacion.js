@@ -111,8 +111,8 @@ class visualizarAsignacion extends Component {
 
   //Confirmar asignacion
   confirmarAsignacion = async () => {
-     // if(this.state.asignacion.asignacionA == this.state.nombre_completo){
-    if (0 == 0) {
+    console.log(this.state.nombre_completo + " == " + this.state.asignacion.asignacionA)
+    if(this.state.asignacion.asignacionA == this.state.nombre_completo){
       this.props.firebase.db
         .collection("Asignaciones")
         .doc(this.props.match.params.id)
@@ -128,8 +128,10 @@ class visualizarAsignacion extends Component {
             mensaje: error,
           })
         });
+      alert("Cofirmación realizada! Por el usuario designado: "+this.state.nombre_completo);
     } else {
-      console.log("no son iguales");
+      alert("El usuario no puede confirmar ya que no le fue asignado esta tarea. El usuario ingresado en la aplicación "+
+      this.state.nombre_completo + " no es el colaborador quien le fue asignada esta tarea");
     }
   };
 
@@ -199,7 +201,7 @@ class visualizarAsignacion extends Component {
             />
           </Grid>
           
-          <p>El estado de confirmación esta en: {this.state.asignacion.confirmada+""}</p>
+          <p>La confirmación de Asignación esta en: {this.state.asignacion.confirmada+""}</p>
 
           <Grid item xs={12} sm={6}>
             <Table>

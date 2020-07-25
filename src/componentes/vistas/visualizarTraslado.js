@@ -57,7 +57,8 @@ class visualizarTraslado extends Component {
       adjuntos: [],
       confirmado: false,
     },
-    usuarios: [],
+    usuarios: [],    
+    nombre_completo: "",
   };
 
   entradaDatoEnEstado = (e) => {
@@ -92,29 +93,43 @@ class visualizarTraslado extends Component {
 
       this.setState({ usuarios: arrayUsuarios });
     });
+    //Datos de confirmar tralado
+    const usuarioCollection = this.props.firebase.db.collection("Users");
+    const usuarioDB = await usuarioCollection
+      .doc(this.props.firebase.auth.currentUser.uid)
+      .get();
+    let usuarioData = usuarioDB.data();
+
+    let nombre = usuarioData.nombre;
+    let apellido = usuarioData.apellido;
+    let nombreCompleto = nombre + " " + apellido;
+    this.setState({nombre_completo: nombreCompleto});
   }
 
 //Confirmar traslado
 confirmarTraslado = async () => {
- if (0 == 0) {
-   this.props.firebase.db
-     .collection("Traslados")
-     .doc(this.props.match.params.id)
-     .update("confirmado", true)
-     .then(() => {
-       let traslado_ = Object.assign({}, this.state.traslado);
-       traslado_.confirmado = true;
-       this.setState({traslado:traslado_});
-     })
-     .catch((error) => {
-       openMensajePantalla({
-         open: true,
-         mensaje: error,
-       })
-     });
- } else {
-   console.log("no son iguales");
- }
+  console.log(this.state.nombre_completo + " == " + this.state.traslado.trasladoA)
+  if(this.state.traslado.trasladoA == this.state.nombre_completo){
+    this.props.firebase.db
+      .collection("Traslados")
+      .doc(this.props.match.params.id)
+      .update("confirmado", true)
+      .then(() => {
+        let traslado_ = Object.assign({}, this.state.traslado);
+        traslado_.confirmado = true;
+        this.setState({traslado:traslado_});
+      })
+      .catch((error) => {
+        openMensajePantalla({
+          open: true,
+          mensaje: error,
+        })
+      });
+      alert("Cofirmación realizada! Por el usuario designado: "+this.state.nombre_completo);
+    } else {
+      alert("El usuario no puede confirmar ya que no le fue asignado esta tarea. El usuario ingresado en la aplicación "+
+      this.state.nombre_completo + " no es el colaborador quien le fue asignada esta tarea");
+    }
 };
 
   render() {
@@ -181,6 +196,9 @@ confirmarTraslado = async () => {
               color="primary"
             />
           </Grid>
+
+          <p>La confirmación de Traslado esta en: {this.state.traslado.confirmado+""}</p>
+
 
           <Grid item xs={12} sm={6}>
             <Table>

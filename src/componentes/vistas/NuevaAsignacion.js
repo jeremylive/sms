@@ -63,7 +63,7 @@ class NuevoAsignacion extends Component {
       asignacionA: "",
       asunto: "",
       adjuntos: [],
-      confirmarAsignacion: false,
+      confirmada: false,
     },
     archivos: [],
     usuarios: [],
