@@ -63,7 +63,8 @@ class visualizarAsignacion extends Component {
     usuarios: [],
     nombre_completo: "",
     confirmarAsignacionA: false,
-    confirmadoA: ""
+    confirmadoA: "",
+    num: "bien"
   };
 
   entradaDatoEnEstado = (e) => {
@@ -120,7 +121,6 @@ class visualizarAsignacion extends Component {
     let apellido = usuarioData.apellido;
     let nombreCompleto = nombre + " " + apellido;
     this.setState({nombre_completo: nombreCompleto});
-
     //Imprimo confirmado
     const confirmCollection = this.props.firebase.db.collection("Asignaciones");
     const confirmDB = await confirmCollection.doc(this.props.match.params.id).get();
@@ -129,7 +129,22 @@ class visualizarAsignacion extends Component {
     let confirmado = confirmData.confirmarAsignacion;
     this.setState({ confirmadoA: confirmado});
     console.log(this.state.confirmadoA);
+
+
+   // this.cargarConfirmacion();
+
   }
+
+  // cargarConfirmacion = async () => {
+  //   //Imprimo confirmado
+  //   const confirmCollection = this.props.firebase.db.collection("Asignaciones");
+  //   const confirmDB = await confirmCollection.doc(this.props.match.params.id).get();
+  //   let confirmData = confirmDB.data();
+
+  //   let confirmado = confirmData.confirmarAsignacion;
+  //   this.setState({ confirmadoA: confirmado});
+  //   console.log(this.state.confirmadoA);
+  // }
 
   guardarAsignacion = async () => {
 
@@ -218,8 +233,9 @@ class visualizarAsignacion extends Component {
               color="primary"
             />
           </Grid>
-
+          
           <p>El estado de confirmación esta en: {this.state.confirmadoA}</p>
+          <p>{this.state.num}</p>
 
           <Grid item xs={12} sm={6}>
             <Table>
