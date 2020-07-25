@@ -27,10 +27,6 @@ import HomeIcon from "@material-ui/icons/Home";
 import SearchIcon from "@material-ui/icons/Search";
 
 import { openMensajePantalla } from "../sesion/actions/snackbarAction";
-import logo from "../../logo.svg";
-import FormControl from "@material-ui/core/FormControl";
-import NativeSelect from "@material-ui/core/NativeSelect";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 const style = {
   cardGrid: {
@@ -59,6 +55,7 @@ const style = {
   },
   cardContent: {
     flexGrow: 1,
+    padding: "10px 15px"
   },
   barraBoton: {
     marginTop: "20px",
@@ -231,9 +228,6 @@ class ListaTramites extends Component {
 
   //Buscar tramites
   async buscarTramites() {
-    //Vacía la lista de tramites
-    this.setState({ tramites: [] });
-    this.setState({ rutas: [] });
     //Cargar todas los tramites que cumplan la busqueda
     let tramitesQuery = this.props.firebase.db
       .collection("Tramites")
@@ -286,26 +280,36 @@ class ListaTramites extends Component {
     this.setState({ selectEstado: event.target.value });
   };
 
-  //Cambiar el estado
+  //Cambiar el estado de un trámite
   cambiarEstado = async () => {
     if (this.state.selectEstado === "") {
       console.log("No seleccionó ningún estado");
       return;
     }
-    //Inserta en tramite el estado
+    //Obtiene las palabras de busqueda
+    let tramiteQuery = await this.props.firebase.db
+      .collection("Tramites")
+      .doc(this.state.idTramiteActual)
+      .get();
+    let tramiteData = tramiteQuery.data();
+    let arrayPalabras = tramiteData.keywords;
+    arrayPalabras[8] = this.state.selectEstado; //Actualiza la palabra de busqueda con el estado
+    //Actualiza el tramite
     this.props.firebase.db
       .collection("Tramites")
       .doc(this.state.idTramiteActual)
-      .update("estado", this.state.selectEstado)
+      .update("estado", this.state.selectEstado, "keywords", arrayPalabras)
+      .then(() => {
+        //Cierra el dialogo y refresca los resultados
+        this.setState({ estadoDialog: false });
+        this.buscarTramites();
+      })
       .catch((error) => {
         openMensajePantalla({
           open: true,
           mensaje: error,
         });
       });
-    //Cierra el dialogo y refresca los resultados
-    this.setState({ estadoDialog: false });
-    this.buscarTramites();
   };
 
   //Abre el Dialog
@@ -632,7 +636,7 @@ class ListaTramites extends Component {
                 <HomeIcon />
                 Inicio
               </Link>
-              <Typography color="textPrimary">Trámites activos</Typography>
+              <Typography color="textPrimary">Trámites</Typography>
             </Breadcrumbs>
           </Grid>
 
@@ -663,49 +667,48 @@ class ListaTramites extends Component {
           </Grid>
 
           {/*Mostrar las rutas*/
-            this.state.rutas.map((ruta, index) => (
-              <Grid item style={style.gridTextfield} key={ruta.idTramite}>
-                <Grid container style={{marginBottom:"5px"}}>
-                  <Typography variant="body1">Documento: {ruta.idTramite}</Typography>
-                  <Typography variant="body1" style={{marginLeft:"10px"}}>Estado: {this.state.tramites[index].estado}</Typography> 
-                </Grid>
-                <Button
-                  variant="contained"
-                  onClick={() => this.abrirDialog(ruta.idTramite)}
-                  color="primary"
-                  size="small"
-                  style={style.botonTramite}
-                  disableElevation
-                >
-                  Cambiar estado
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  style={style.botonTramite}
-                  disableElevation
-                  onClick={() => this.getNotas(ruta.idTramite)}
-                >
-                  Ver notas
-                </Button>
-                <Grid
-                  container
-                  spacing={1}
-                  container
-                  direction="row"
-                  alignitems="stretch"
-                >
-                  {this.state.rutas[index].tareas.map((tarea) => (
-                    <Grid item key={tarea.id} xs={12} sm={6} md={2}>
-                      {this.renderTarea(tarea, ruta.idTramite)}
-                    </Grid>
-                  ))}
-                </Grid>
-                <Divider style={{ margin: "10px" }} />
+          this.state.rutas.map((ruta, index) => (
+            <Grid item style={style.gridTextfield} key={ruta.idTramite}>
+              <Grid container style={{marginBottom:"5px"}}>
+                <Typography variant="body1">Documento: {ruta.idTramite}</Typography>
+                <Typography variant="body1" style={{marginLeft:"10px"}}>Estado: {this.state.tramites[index].estado}</Typography> 
               </Grid>
-            ))
-          }
+              <Button
+                variant="contained"
+                onClick={() => this.abrirDialog(ruta.idTramite)}
+                color="primary"
+                size="small"
+                style={style.botonTramite}
+                disableElevation
+              >
+                Cambiar estado
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                style={style.botonTramite}
+                disableElevation
+                onClick={() => this.getNotas(ruta.idTramite)}
+              >
+                Ver notas
+              </Button>
+              <Grid
+                container
+                spacing={1}
+                container
+                direction="row"
+                alignitems="stretch"
+              >
+                {this.state.rutas[index].tareas.map((tarea) => (
+                  <Grid item key={tarea.id} xs={12} sm={6} md={2}>
+                    {this.renderTarea(tarea, ruta.idTramite)}
+                  </Grid>
+                ))}
+              </Grid>
+              <Divider style={{ margin: "10px" }} />
+            </Grid>
+          )) }
         </Paper>
       </Container>
     );
@@ -713,31 +716,3 @@ class ListaTramites extends Component {
 }
 
 export default consumerFirebase(ListaTramites);
-
-{
-  /* <FormControl fullWidth color="finish">
-<InputLabel htmlFor="demo-customized-select-native">
-  Estado
-</InputLabel>
-<NativeSelect id="demo-customized-select-native">
-  <option aria-label="None" value="" />
-  <option value={10}>Proceso</option>
-  <option value={20}>Terminado</option>
-  <option value={30}>Observación</option>
-</NativeSelect>
-</FormControl>
-
-<ButtonGroup>
-<ButtonDropdown
-  isOpen={this.state.dropdownOpen}
-  toggle={this.toggle}
->
-  <DropdownToggle caret>Estado</DropdownToggle>
-  <DropdownMenu>
-    <DropdownItem>Aprobado</DropdownItem>
-    <DropdownItem>Rechazado</DropdownItem>
-    <DropdownItem>Prevención</DropdownItem>
-  </DropdownMenu>
-</ButtonDropdown>
-</ButtonGroup> */
-}
