@@ -13,7 +13,6 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  MenuItem,
   Checkbox,
 } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
@@ -53,14 +52,17 @@ class visualizarAsignacion extends Component {
   state = {
     asignacion: {
       fecha: "",
-      asignacionPor: "",
-      asignacionA: "",
       asunto: "",
       adjuntos: [],
       confirmada: false,
+      //ID del usuario
+      asignacionPor: "",
+      asignacionA: ""
     },
-    usuarios: [],
-    nombre_completo: "",
+    //Nombre de la persona
+    asignacionPorNombre: "",
+    asignacionANombre: "",
+    usuarioActual: ""
   };
 
   entradaDatoEnEstado = (e) => {
@@ -77,42 +79,30 @@ class visualizarAsignacion extends Component {
     const asignacionDB = await asignacionCollection.doc(id).get();
     let asignacionData = asignacionDB.data();
     //Ajusta el formato de la fecha
-    let fechaString = asignacionData.fecha
-      .toDate()
-      .toLocaleString(undefined, { hour12: "true" });
+    let fechaString = asignacionData.fecha.toDate().toLocaleString(undefined, { hour12: "true" });
     asignacionData.fecha = fechaString;
+    this.setState({ asignacion: asignacionData });
+    //Obtiene el nombre de los usuarios utilizando la id
+    let usuarioQuery = this.props.firebase.db.collection("Users");
+    let usuarioAsignacionPor = await usuarioQuery.doc(asignacionData.asignacionPor).get();
+    let usuarioAsignacionA = await usuarioQuery.doc(asignacionData.asignacionA).get();
+    let usuarioActual = await usuarioQuery.doc(this.props.firebase.auth.currentUser.uid).get();
+    //Forma las strings de nombres
+    let nombreUsuarioPor = usuarioAsignacionPor.data().nombre + " " + usuarioAsignacionPor.data().apellido;
+    let nombreUsuarioA = usuarioAsignacionA.data().nombre + " " + usuarioAsignacionA.data().apellido;
+    let nombreUsuarioActual = usuarioActual.data().nombre + " " + usuarioActual.data().apellido;
 
-    this.setState({asignacion: asignacionData});
-    //Obtiene los usuarios para llenar el comboBox
-    const usuariosQuery = this.props.firebase.db
-      .collection("Users")
-      .orderBy("apellido");
-    usuariosQuery.get().then((resultados) => {
-      let arrayUsuarios = resultados.docs.map((usuario) => {
-        let id = usuario.id;
-        let data = usuario.data();
-        return { id, ...data };
-      });
-
-      this.setState({ usuarios: arrayUsuarios });
-    });
-    //Datos de confirmar asignacion
-    const usuarioCollection = this.props.firebase.db.collection("Users");
-    const usuarioDB = await usuarioCollection
-      .doc(this.props.firebase.auth.currentUser.uid)
-      .get();
-    let usuarioData = usuarioDB.data();
-
-    let nombre = usuarioData.nombre;
-    let apellido = usuarioData.apellido;
-    let nombreCompleto = nombre + " " + apellido;
-    this.setState({nombre_completo: nombreCompleto});
+    this.setState({
+      asignacionPorNombre: nombreUsuarioPor,
+      asignacionANombre: nombreUsuarioA,
+      usuarioActual: nombreUsuarioActual
+    })
   }
 
   //Confirmar asignacion
   confirmarAsignacion = async () => {
-    console.log(this.state.nombre_completo + " == " + this.state.asignacion.asignacionA)
-    if(this.state.asignacion.asignacionA == this.state.nombre_completo){
+    console.log(this.state.asignacion.asignacionA + "==" + this.props.firebase.auth.currentUser.uid)
+    if(this.state.asignacion.asignacionA === this.props.firebase.auth.currentUser.uid){
       this.props.firebase.db
         .collection("Asignaciones")
         .doc(this.props.match.params.id)
@@ -128,10 +118,10 @@ class visualizarAsignacion extends Component {
             mensaje: error,
           })
         });
-      alert("Cofirmación realizada! Por el usuario designado: "+this.state.nombre_completo);
+      alert("Cofirmación realizada! Por el usuario designado: "+this.state.usuarioActual);
     } else {
       alert("El usuario no puede confirmar ya que no le fue asignado esta tarea. El usuario ingresado en la aplicación "+
-      this.state.nombre_completo + " no es el colaborador quien le fue asignada esta tarea");
+      this.state.usuarioActual + " no es el colaborador quien le fue asignado esta tarea.");
     }
   };
 
@@ -142,11 +132,11 @@ class visualizarAsignacion extends Component {
         <Paper style={style.paper}>
           <Grid item xs={12} md={8}>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link color="inherit" style={style.link} href="/tramites">
+              <Link color="initial" style={style.link} href="/tramites">
                 <HomeIcon style={style.homeIcon} />
                 Trámites
               </Link>
-              <Typography color="textPrimary">Asignaciones</Typography>
+              <Typography color="textPrimary">Asignacion</Typography>
             </Breadcrumbs>
           </Grid>
 
@@ -155,7 +145,7 @@ class visualizarAsignacion extends Component {
               name="fecha"
               label="Fecha"
               fullWidth
-              onChange={this.entradaDatoEnEstado}
+              //onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.fecha}
             />
           </Grid>
@@ -163,20 +153,20 @@ class visualizarAsignacion extends Component {
           <Grid item xs={12} md={6}>
             <TextField
               name="asignacionPor"
-              label="Recibido por"
+              label="Asignado por"
               fullWidth
-              onChange={this.entradaDatoEnEstado}
-              value={this.state.asignacion.asignacionPor}
+              //onChange={this.entradaDatoEnEstado}
+              value={this.state.asignacionPorNombre}
             />
           </Grid>
 
           <Grid item xs={12} md={6}>
             <TextField
-              name="enviadoPor"
-              label="Enviado por"
+              name="asignacionA"
+              label="Asignado a"
               fullWidth
-              onChange={this.entradaDatoEnEstado}
-              value={this.state.asignacion.asignacionA}
+              //onChange={this.entradaDatoEnEstado}
+              value={this.state.asignacionANombre}
             />
           </Grid>
 
@@ -187,21 +177,19 @@ class visualizarAsignacion extends Component {
               fullWidth
               rowsMax="4"
               multiline
-              onChange={this.entradaDatoEnEstado}
+              //onChange={this.entradaDatoEnEstado}
               value={this.state.asignacion.asunto}
             />
           </Grid>
 
           <Grid item xs={12} md={6}>
-            Asignación confirmada
+            Asignación confirmada:
             <Checkbox
               label="Asignacion confirmada"
               checked={this.state.asignacion.confirmada}
               color="primary"
             />
           </Grid>
-          
-          <p>La confirmación de Asignación esta en: {this.state.asignacion.confirmada+""}</p>
 
           <Grid item xs={12} sm={6}>
             <Table>
@@ -210,7 +198,7 @@ class visualizarAsignacion extends Component {
                   ? this.state.asignacion.adjuntos.map((foto, i) => (
                       <TableRow key={i}>
                         <TableCell align="left">
-                          <img src={foto} style={style.fotoInmueble} />
+                          <img alt={"Foto "+i} src={foto} style={style.fotoInmueble} />
                         </TableCell>
                       </TableRow>
                     ))
@@ -219,20 +207,17 @@ class visualizarAsignacion extends Component {
             </Table>
           </Grid>
 
-          <Grid container justify="center">
-            <Grid item xs={12} md={6}>
-              <Button
-                type="button"
-                fullWidth
-                variant="contained"
-                size="large"
-                color="primary"
-                style={style.submit}
-                onClick={this.confirmarAsignacion}
-              >
-                Confirmar asignación
-              </Button>
-            </Grid>
+          <Grid item xs={12} md={6}>
+            <Button
+              type="button"
+              variant="contained"
+              size="large"
+              color="primary"
+              style={style.submit}
+              onClick={this.confirmarAsignacion}
+            >
+              Confirmar asignación
+            </Button>
           </Grid>
         </Paper>
       </Container>

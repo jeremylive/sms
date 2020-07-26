@@ -16,7 +16,6 @@ import {
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Object, Date } from "core-js";
-import { createKeyword } from "../sesion/actions/Keyword";
 import ImageUploader from "react-images-upload";
 import { openMensajePantalla } from "../sesion/actions/snackbarAction";
 import HomeIcon from "@material-ui/icons/Home";
@@ -192,7 +191,7 @@ class NuevoTraslado extends Component {
         <Paper style={style.paper}>
           <Grid item xs={12} md={8}>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link color="inherit" style={style.link} to="/tramites">
+              <Link color="initial" style={style.link} to="/tramites">
                 <HomeIcon style={style.homeIcon} />
                 Home
               </Link>
@@ -229,7 +228,7 @@ class NuevoTraslado extends Component {
               value={this.state.traslado.trasladoPor}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
-                  <MenuItem key={usuario.id} value={usuario.nombre + " " + usuario.apellido}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                  <MenuItem key={usuario.id} value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
             </TextField>
           </Grid>
@@ -246,7 +245,7 @@ class NuevoTraslado extends Component {
               value={this.state.traslado.trasladoA}>
                 <MenuItem value={""}>Seleccione el usuario</MenuItem>
                 {this.state.usuarios.map((usuario) => (
-                  <MenuItem key={usuario.id} value={usuario.nombre + " " + usuario.apellido}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
+                  <MenuItem key={usuario.id} value={usuario.id}>{usuario.nombre + " " + usuario.apellido}</MenuItem>
                 ))}
             </TextField>
           </Grid>
@@ -283,7 +282,7 @@ class NuevoTraslado extends Component {
                 {this.state.archivos.map((archivo, i) => (
                   <TableRow key={i}>
                     <TableCell align="left">
-                      <img src={archivo.urlTemp} style={style.foto} />
+                      <img alt={"Foto "+i} src={archivo.urlTemp} style={style.foto} />
                     </TableCell>
                     <TableCell>
                       <Button

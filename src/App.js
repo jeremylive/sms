@@ -181,10 +181,11 @@ function App(props) {
                   exact
                   component={LoginTelefono}
                 />
-                {/*Redirige a la pagina de login en lugar de mostrar una página en blanco*/}
+                {/*Redirige a la pagina de login en lugar de mostrar una página en blanco
                 <Route exact path="/">
                   <Redirect to="/auth/login" />
                 </Route>
+                */}
 
               </Switch>
             </Grid>

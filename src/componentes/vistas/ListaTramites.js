@@ -191,10 +191,10 @@ class ListaTramites extends Component {
     //Borra de la lista de rutas
     let arrayRutasNuevo = this.state.rutas;
     let arrayTareasNuevo = this.state.rutas
-      .find((tramite) => tramite.idTramite == pIDTramite)
+      .find((tramite) => tramite.idTramite === pIDTramite)
       .tareas.filter((tarea) => tarea.id !== pIDTarea);
     arrayRutasNuevo.find(
-      (tramite) => tramite.idTramite == pIDTramite
+      (tramite) => tramite.idTramite === pIDTramite
     ).tareas = arrayTareasNuevo;
     this.setState({ rutas: arrayRutasNuevo });
   }
@@ -221,16 +221,20 @@ class ListaTramites extends Component {
 
   //Cambiar texto de busqueda
   cambiarTextoBusqueda(e) {
-    let newState = {};
-    newState[e.target.name] = e.target.value;
-    this.setState(newState);
+    this.setState({textoBusqueda:e.target.value});
   }
 
   //Buscar tramites
   async buscarTramites() {
+    //Vacia las listas de tramites y rutas
+    this.setState({
+      tramites:[],
+      rutas:[]
+    });
     //Cargar todas los tramites que cumplan la busqueda
     let tramitesQuery = this.props.firebase.db
       .collection("Tramites")
+      .orderBy("fechaInicio", "desc")
       .where("keywords", "array-contains", this.state.textoBusqueda);
     //Si la búsqueda esta vacía retorna todos los trámites
     if (this.state.textoBusqueda.trim() === "") {
@@ -239,8 +243,8 @@ class ListaTramites extends Component {
         .orderBy("fechaInicio", "desc");
     }
 
-    const snapshot = await tramitesQuery.get();
-    const arrayTramites = snapshot.docs.map((doc) => {
+    let snapshot = await tramitesQuery.get();
+    let arrayTramites = snapshot.docs.map((doc) => {
       let data = doc.data();
       let id = doc.id;
       return { id, ...data };
@@ -325,7 +329,7 @@ class ListaTramites extends Component {
     switch (tarea.tipoTarea) {
       case "Asignaciones":
         //Si tiene imagen retorna una tarjeta con imagen
-        if (tarea.adjuntos.length != 0) {
+        if (tarea.adjuntos.length !== 0) {
           return (
             <Card style={style.card}>
               <CardMedia
@@ -408,7 +412,7 @@ class ListaTramites extends Component {
         }
       case "Recepciones":
         //Si tiene imagen retorna una tarjeta con imagen
-        if (tarea.adjuntos.length != 0) {
+        if (tarea.adjuntos.length !== 0) {
           return (
             <Card style={style.card}>
               <CardMedia
@@ -492,7 +496,7 @@ class ListaTramites extends Component {
 
       case "Traslados":
         //Si tiene imagen retorna una tarjeta con imagen
-        if (tarea.adjuntos.length != 0) {
+        if (tarea.adjuntos.length !== 0) {
           return (
             <Card style={style.card}>
               <CardMedia
@@ -659,7 +663,7 @@ class ListaTramites extends Component {
                 style={style.botonBuscar}
                 size="small"
                 disableElevation
-                onClick={this.buscarTramites.bind(this)}
+                onClick={() => this.buscarTramites()}
               >
                 <SearchIcon />
               </Button>
@@ -696,7 +700,6 @@ class ListaTramites extends Component {
               <Grid
                 container
                 spacing={1}
-                container
                 direction="row"
                 alignitems="stretch"
               >

@@ -51,14 +51,17 @@ class visualizarTraslado extends Component {
   state = {
     traslado: {
       fecha: "",
-      trasladoPor: "",
-      trasladoA: "",
       asunto: "",
       adjuntos: [],
       confirmado: false,
+      //ID del usuario
+      trasladoPor: "",
+      trasladoA: ""
     },
-    usuarios: [],    
-    nombre_completo: "",
+    //Nombre de la persona
+    trasladoPorNombre: "",
+    trasladoANombre: "",
+    usuarioActual: ""
   };
 
   entradaDatoEnEstado = (e) => {
@@ -76,40 +79,28 @@ class visualizarTraslado extends Component {
     //Ajusta el formato de la fecha
     let fechaString = trasladoData.fecha.toDate().toLocaleString(undefined, { hour12: "true" });
     trasladoData.fecha = fechaString;
+    this.setState({ traslado: trasladoData });
+    //Obtiene el nombre de los usuarios utilizando la id
+    let usuarioQuery = this.props.firebase.db.collection("Users");
+    let usuarioTrasladoPor = await usuarioQuery.doc(trasladoData.trasladoPor).get();
+    let usuarioTrasladoA = await usuarioQuery.doc(trasladoData.trasladoA).get();
+    let usuarioActual = await usuarioQuery.doc(this.props.firebase.auth.currentUser.uid).get();
+    //Forma las strings de nombres
+    let nombreUsuarioPor = usuarioTrasladoPor.data().nombre + " " + usuarioTrasladoPor.data().apellido;
+    let nombreUsuarioA = usuarioTrasladoA.data().nombre + " " + usuarioTrasladoA.data().apellido;
+    let nombreUsuarioActual = usuarioActual.data().nombre + " " + usuarioActual.data().apellido;
 
     this.setState({
-      traslado: trasladoData,
-    });
-    //Obtiene los usuarios para llenar el comboBox
-    const usuariosQuery = this.props.firebase.db
-      .collection("Users")
-      .orderBy("apellido");
-    usuariosQuery.get().then((resultados) => {
-      let arrayUsuarios = resultados.docs.map((usuario) => {
-        let id = usuario.id;
-        let data = usuario.data();
-        return { id, ...data };
-      });
-
-      this.setState({ usuarios: arrayUsuarios });
-    });
-    //Datos de confirmar tralado
-    const usuarioCollection = this.props.firebase.db.collection("Users");
-    const usuarioDB = await usuarioCollection
-      .doc(this.props.firebase.auth.currentUser.uid)
-      .get();
-    let usuarioData = usuarioDB.data();
-
-    let nombre = usuarioData.nombre;
-    let apellido = usuarioData.apellido;
-    let nombreCompleto = nombre + " " + apellido;
-    this.setState({nombre_completo: nombreCompleto});
+      trasladoPorNombre: nombreUsuarioPor,
+      trasladoANombre: nombreUsuarioA,
+      usuarioActual: nombreUsuarioActual
+    })
   }
 
 //Confirmar traslado
 confirmarTraslado = async () => {
-  console.log(this.state.nombre_completo + " == " + this.state.traslado.trasladoA)
-  if(this.state.traslado.trasladoA == this.state.nombre_completo){
+  console.log(this.state.traslado.trasladoA + "==" + this.props.firebase.auth.currentUser.uid)
+  if(this.state.traslado.trasladoA === this.props.firebase.auth.currentUser.uid){
     this.props.firebase.db
       .collection("Traslados")
       .doc(this.props.match.params.id)
@@ -125,10 +116,10 @@ confirmarTraslado = async () => {
           mensaje: error,
         })
       });
-      alert("Cofirmación realizada! Por el usuario designado: "+this.state.nombre_completo);
+      alert("Cofirmación realizada! Por el usuario designado: "+this.state.usuarioActual);
     } else {
       alert("El usuario no puede confirmar ya que no le fue asignado esta tarea. El usuario ingresado en la aplicación "+
-      this.state.nombre_completo + " no es el colaborador quien le fue asignada esta tarea");
+      this.state.usuarioActual + " no es el colaborador quien le fue asignado esta tarea.");
     }
 };
 
@@ -138,11 +129,11 @@ confirmarTraslado = async () => {
         <Paper style={style.paper}>
           <Grid item xs={12} md={8}>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link color="inherit" style={style.link} href="/tramites">
+              <Link color="initial" style={style.link} href="/tramites">
                 <HomeIcon style={style.homeIcon} />
                 Trámites
               </Link>
-              <Typography color="textPrimary">Traslados</Typography>
+              <Typography color="textPrimary">Traslado</Typography>
             </Breadcrumbs>
           </Grid>
 
@@ -151,7 +142,7 @@ confirmarTraslado = async () => {
               name="fecha"
               label="Fecha"
               fullWidth
-              onChange={this.entradaDatoEnEstado}
+              //onChange={this.entradaDatoEnEstado}
               value={this.state.traslado.fecha}
             />
           </Grid>
@@ -159,20 +150,20 @@ confirmarTraslado = async () => {
           <Grid item xs={12} md={6}>
             <TextField
               name="trasladoPor"
-              label="Recibido por"
+              label="Trasladado por"
               fullWidth
-              onChange={this.entradaDatoEnEstado}
-              value={this.state.traslado.trasladoPor}
+              //onChange={this.entradaDatoEnEstado}
+              value={this.state.trasladoPorNombre}
             />
           </Grid>
 
           <Grid item xs={12} md={6}>
             <TextField
               name="trasladoA"
-              label="Enviado por"
+              label="Trasladado a"
               fullWidth
-              onChange={this.entradaDatoEnEstado}
-              value={this.state.traslado.trasladoA}
+              //onChange={this.entradaDatoEnEstado}
+              value={this.state.trasladoANombre}
             />
           </Grid>
 
@@ -183,22 +174,19 @@ confirmarTraslado = async () => {
               fullWidth
               rowsMax="4"
               multiline
-              onChange={this.entradaDatoEnEstado}
+              //onChange={this.entradaDatoEnEstado}
               value={this.state.traslado.asunto}
             />
           </Grid>
 
           <Grid item xs={12} md={6}>
-            Traslado confirmado
+            Traslado confirmado:
             <Checkbox
               label="Traslado confirmado"
               checked={this.state.traslado.confirmado}
               color="primary"
             />
           </Grid>
-
-          <p>La confirmación de Traslado esta en: {this.state.traslado.confirmado+""}</p>
-
 
           <Grid item xs={12} sm={6}>
             <Table>
@@ -207,7 +195,7 @@ confirmarTraslado = async () => {
                   ? this.state.traslado.adjuntos.map((foto, i) => (
                       <TableRow key={i}>
                         <TableCell align="left">
-                          <img src={foto} style={style.fotoInmueble} />
+                          <img alt={"Foto "+i} src={foto} style={style.fotoInmueble} />
                         </TableCell>
                       </TableRow>
                     ))
@@ -216,20 +204,18 @@ confirmarTraslado = async () => {
             </Table>
           </Grid>
 
-          <Grid container justify="center">
-            <Grid item xs={12} md={6}>
-              <Button
-                type="button"
-                fullWidth
-                variant="contained"
-                size="large"
-                color="primary"
-                style={style.submit}
-                onClick={this.confirmarTraslado}
-              >
-                Confirmar traslado
-              </Button>
-            </Grid>
+          <Grid item xs={12} md={6}>
+            <Button
+              type="button"
+              
+              variant="contained"
+              size="large"
+              color="primary"
+              style={style.submit}
+              onClick={this.confirmarTraslado}
+            >
+              Confirmar traslado
+            </Button>
           </Grid>
         </Paper>
       </Container>

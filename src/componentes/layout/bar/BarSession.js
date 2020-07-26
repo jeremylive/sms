@@ -16,7 +16,6 @@ import { MenuDerecha } from "./menuDerecha";
 import { MenuIzquierda } from "./menuIzquierda";
 import fotoUsuairoTemp from "../../../logo.svg";
 import { withRouter } from "react-router-dom";
-import { Link } from "react-router-dom";
 import {obtenerPermisoNotification} from '../../sesion/actions/notificationAction';
 
 const styles = (theme) => ({

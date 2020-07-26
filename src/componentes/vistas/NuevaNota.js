@@ -11,11 +11,8 @@ import {
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Object, Date } from "core-js";
-import { createKeyword } from "../sesion/actions/Keyword";
-import ImageUploader from "react-images-upload";
 import { openMensajePantalla } from "../sesion/actions/snackbarAction";
 import HomeIcon from "@material-ui/icons/Home";
-import uuid from "react-native-uuid";
 
 const style = {
   container: {
@@ -72,7 +69,7 @@ class NuevaNota extends Component {
 
   crearNota = () => {
     //Guarda automaticamente la fecha en que se crea la nota
-    this.state.fecha = new Date();
+    this.setState({fecha: new Date()})
 
     this.props.firebase.db
       .collection("Notas")

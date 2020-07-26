@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useStateValue } from "../sesion/store";
-import reactFoto from "../../logo.svg";
 import {
   Typography,
   TextField,
