@@ -202,7 +202,7 @@ class NuevaRecepcion extends Component {
     //Crea el trámite
     this.crearTramite();
 
-    const { archivos, recepcion: recepcion } = this.state;
+    const { archivos, recepcion } = this.state;
     
     //Crearle a cada image(archivo) un alias, ese alias es la referencia con la cual posteriormente lo invocaras
     //Ademas ese alias sera almacenado en la base de datos(firestore.firebase)

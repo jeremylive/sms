@@ -1,23 +1,17 @@
 import React, { useEffect } from "react";
 import "./App.css";
-
-import ListaInmuebles from "./componentes/vistas/ListaInmuebles";
-//import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "./theme/theme";
 import AppNavbar from "./componentes/layout/AppNavbar";
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import RegistrarUsuarios from "./componentes/seguridad/RegistrarUsuarios";
 import Login from "./componentes/seguridad/Login";
 import { FirebaseContext } from "./server";
 import { useStateValue } from "./componentes/sesion/store";
 import { Snackbar } from "@material-ui/core";
-//import { openSnackbarReducer } from "./sesion/reducers/openSnackbarReducer";
 import RutaAutenticada from "./componentes/seguridad/RutaAutenticada";
 import PerfilUsuario from "./componentes/seguridad/PerfilUsuario";
-import NuevoInmueble from "./componentes/vistas/NuevoInmueble";
-import EditarInmueble from "./componentes/vistas/EditarInmueble";
 import ListaTramites from "./componentes/vistas/ListaTramites";
 import NuevoTraslado from "./componentes/vistas/NuevoTraslado";
 import NuevoAsignacion from "./componentes/vistas/NuevaAsignacion";
@@ -29,10 +23,8 @@ import { Provider } from "react-redux";
 
 import { openMensajePantalla } from "./componentes/sesion/actions/snackbarAction";
 import visualizarRecepcion from "./componentes/vistas/visualizarRecepcion";
-import ListaUsuarios from "./componentes/vistas/ListaUsuarios";
 import visualizarTraslado from "./componentes/vistas/visualizarTraslado";
 import visualizarAsignacion from "./componentes/vistas/visualizarAsignacion";
-import UsuariosCreados from "./componentes/vistas/UsuariosCreados";
 
 import verNotas from "./componentes/vistas/verNotas";
 import NuevaNota from "./componentes/vistas/NuevaNota";
@@ -90,11 +82,6 @@ function App(props) {
 
             <Grid container>
               <Switch>
-                {/* <RutaAutenticada exact path="/" autenticadoFirebase={firebase.auth.currentUser} component={ListaInmuebles} />
-              <RutaAutenticada exact path="/inmueble/nuevo" autenticadoFirebase={firebase.auth.currentUser} component={NuevoInmueble} />
-              <RutaAutenticada exact path="/inmueble/:id" autenticadoFirebase={firebase.auth.currentUser} component={EditarInmueble} />
-              */}
-
                 <RutaAutenticada
                   exact
                   path="/auth/perfil"
@@ -107,7 +94,6 @@ function App(props) {
                   autenticadoFirebase={firebase.auth.currentUser}
                   component={ListaTramites}
                 />
-
                 <RutaAutenticada
                   exact
                   path="/tramite/traslado/nuevo"
@@ -156,25 +142,11 @@ function App(props) {
                   autenticadoFirebase={firebase.auth.currentUser}
                   component={verNotas}
                 />
-                <RutaAutenticada
-                  exact
-                  path="/listausuarios"
-                  autenticadoFirebase={firebase.auth.currentUser}
-                  component={ListaUsuarios}
-                />
-
-                {/* <Route
-                  path="/auth/usuariosCreados"
-                  exact
-                  component={UsuariosCreados}
-                /> */}
-
                 <Route
                   path="/auth/registrarusuario"
                   exact
                   component={RegistrarUsuarios}
                 />
-
                 <Route path="/auth/login" exact component={Login} />
                 <Route
                   path="/auth/loginTelefono"

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import * as firebaseui from 'firebaseui';
 import { Container, Avatar, Typography, Grid, TextField, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import LockOutlineIcon from '@material-ui/icons/LockOutlined';
 import { consumerFirebase } from '../../server';
