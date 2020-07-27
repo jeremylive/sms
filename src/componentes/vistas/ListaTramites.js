@@ -328,9 +328,12 @@ class ListaTramites extends Component {
       .doc(this.state.idTramiteActual)
       .update("estado", this.state.selectEstado, "keywords", arrayPalabras)
       .then(() => {
+        //Cambia el estado del tramite en la lista de state
+        let tramites_ = this.state.tramites;
+        tramites_.find((tramite) => tramite.id === this.state.idTramiteActual)
+        .estado = this.state.selectEstado;
         //Cierra el dialogo y refresca los resultados
-        this.setState({ estadoDialog: false });
-        this.buscarTramites();
+        this.setState({ estadoDialog: false, tramites: tramites_ });
       })
       .catch((error) => {
         openMensajePantalla({
