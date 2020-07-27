@@ -170,10 +170,34 @@ class ListaTramites extends Component {
     this.eliminarAux(pIDTarea, pIDTramite);
   }
 
-  //Eliminar Recepciones
-  async eliminarRecepcion(pIDTarea, pIDTramite) {
-    this.props.firebase.db.collection("Recepciones").doc(pIDTarea).delete();
-    this.eliminarAux(pIDTarea, pIDTramite);
+  //Eliminar Recepcion
+  //Esto elimina todo el trámite
+  async eliminarRecepcion(pIDTramite) {
+    //Borra el trámite
+    this.props.firebase.db.collection("Tramites").doc(pIDTramite).delete();
+    //Busca la ruta a eliminar
+    let rutaTramite = this.state.rutas.find((ruta) => ruta.idTramite === pIDTramite);
+    rutaTramite.tareas.forEach(async (tarea) => {
+      //Borra cada tarea en su tabla respectiva
+      this.props.firebase.db.collection(tarea.tipoTarea).doc(tarea.id).delete();
+      //Borra cada tarea en la tabla TareasXTramite
+      let queryTareasTramite = this.props.firebase.db.collection("TareasXTramite").where("idTarea","==",tarea.id);
+      let snapshotTarea = await queryTareasTramite.get();
+      let idDocumento = snapshotTarea.docs[0].id;
+      
+      this.props.firebase.db.collection("TareasXTramite").doc(idDocumento).delete();
+    })
+    //Borra las notas
+    let queryNotas = this.props.firebase.db.collection("Notas").where("idTramite","==",pIDTramite);
+    queryNotas.get().then((listaNotas) => {
+      listaNotas.docs.forEach((nota) => {
+        this.props.firebase.db.collection("Notas").doc(nota.id).delete();
+      })
+    });
+    //Actualiza las listas del estado
+    let tramites_ = this.state.tramites.filter((tramite) => tramite.id !== pIDTramite);
+    let rutas_ = this.state.rutas.filter((rutaTramite) => rutaTramite.idTramite !== pIDTramite);
+    this.setState({ rutas:rutas_, tramites:tramites_ });
   }
 
   //Eliminaciones generales para cualquier tarea
@@ -222,7 +246,7 @@ class ListaTramites extends Component {
   //Cambiar texto de busqueda
   cambiarTextoBusqueda(e) {
     this.setState({textoBusqueda:e.target.value});
-  }
+  };
 
   //Buscar tramites
   async buscarTramites() {
@@ -443,7 +467,7 @@ class ListaTramites extends Component {
                 <Button
                   size="small"
                   color="primary"
-                  onClick={() => this.eliminarRecepcion(tarea.id, pIDTramite)}
+                  onClick={() => this.eliminarRecepcion(pIDTramite)}
                 >
                   Eliminar
                 </Button>
@@ -485,7 +509,7 @@ class ListaTramites extends Component {
                 <Button
                   size="small"
                   color="primary"
-                  onClick={() => this.eliminarRecepcion(tarea.id, pIDTramite)}
+                  onClick={() => this.eliminarRecepcion(pIDTramite)}
                 >
                   Eliminar
                 </Button>
