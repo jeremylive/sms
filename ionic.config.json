@@ -1,0 +1,7 @@
+{
+    "name": "Sistema de Trazabilidad",
+    "integrations": {
+      "capacitor": {}
+    },
+    "type": "react"
+  }

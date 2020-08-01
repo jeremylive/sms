@@ -1,0 +1,8 @@
+{
+    "appId": "minae.sistematrazabilidad",
+    "appName": "Sistema de Trazabilidad",
+    "bundledWebRuntime": false,
+    "npmClient": "npm",
+    "webDir": "build",
+    "cordova": {}
+  }
