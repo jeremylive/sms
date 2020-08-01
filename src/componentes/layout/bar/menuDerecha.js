@@ -3,15 +3,15 @@ import { List, Link, Avatar, ListItemText, ListItem } from "@material-ui/core";
 
 export const MenuDerecha = ({
   classes,
-  usuario,
   textoUsuario,
   fotoUsuario,
   salirSesion,
+  verPerfil
 }) => (
   <div className={classes.list}>
     <List>
-      <ListItem button component={Link} to="/auth/registrarUsuario">
-        <Avatar classes={{ primary: classes.avatarSize }} src={fotoUsuario} />
+      <ListItem button onClick={verPerfil}>
+        <Avatar style={{backgroundColor: "#10A75F"}} alt={textoUsuario} src={fotoUsuario} />
         <ListItemText
           classes={{ primary: classes.listItemText }}
           primary={textoUsuario}

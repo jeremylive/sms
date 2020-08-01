@@ -622,8 +622,8 @@ class ListaTramites extends Component {
         >
           <DialogTitle>Estado del trámite {this.state.idTramiteActual}</DialogTitle>
           <DialogContent>
-            <Grid container justify="center">
-              <Grid item style={{marginRight:"30px"}}>
+            <Grid fullwidth container justify="center">
+              <Grid item xs={4} style={{marginRight:"20px"}}>
                 <InputLabel id="select-Estado">Seleccione el estado</InputLabel>
                 <Select
                   labelId="select-Estado"

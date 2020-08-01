@@ -1,0 +1,8 @@
+{
+    "appId": "io.ionic.sistematrazabilidad",
+    "appName": "sistematrazabilidad",
+    "bundledWebRuntime": false,
+    "npmClient": "npm",
+    "webDir": "build",
+    "cordova": {}
+  }

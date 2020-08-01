@@ -14,7 +14,6 @@ import { StateContext } from "../../sesion/store";
 import { salirSesion } from "../../sesion/actions/sesionAction";
 import { MenuDerecha } from "./menuDerecha";
 import { MenuIzquierda } from "./menuIzquierda";
-import fotoUsuairoTemp from "../../../logo.svg";
 import { withRouter } from "react-router-dom";
 import {obtenerPermisoNotification} from '../../sesion/actions/notificationAction';
 
@@ -142,10 +141,10 @@ class BarSession extends Component {
           >
             <MenuDerecha
               classes={classes}
-              usuairo={usuario}
               textoUsuario={textoUsuario}
-              fotoUsuario={usuario.foto || fotoUsuairoTemp}
+              fotoUsuario={usuario.foto || "/"}
               salirSesion={this.salirSesionApp}
+              verPerfil={this.goInicio}
             />
           </div>
         </Drawer>

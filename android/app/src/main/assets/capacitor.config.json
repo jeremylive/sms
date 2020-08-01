@@ -1,0 +1,8 @@
+{
+    "appId": "io.ionic.sistematrazabilidad",
+    "appName": "Sistema de Trazabilidad DGTCC",
+    "bundledWebRuntime": false,
+    "npmClient": "npm",
+    "webDir": "build",
+    "cordova": {}
+  }
