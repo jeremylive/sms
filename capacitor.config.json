@@ -1,6 +1,6 @@
 {
-    "appId": "io.ionic.sistematrazabilidad",
-    "appName": "sistematrazabilidad",
+    "appId": "minae.sistematrazabilidad",
+    "appName": "Sistema de Trazabilidad",
     "bundledWebRuntime": false,
     "npmClient": "npm",
     "webDir": "build",

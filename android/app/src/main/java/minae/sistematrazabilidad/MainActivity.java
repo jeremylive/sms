@@ -1,4 +1,4 @@
-package io.ionic.sistematrazabilidad;
+package minae.sistematrazabilidad;
 
 import android.os.Bundle;
 
